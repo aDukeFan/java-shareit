@@ -1,19 +1,20 @@
 package ru.practicum.shareit.user.dto;
 
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.experimental.Accessors;
 import lombok.experimental.FieldDefaults;
-import ru.practicum.shareit.user.model.User;
 
-@AllArgsConstructor
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotNull;
+
+@Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@Accessors(chain = true)
 public class UserDto {
-
     long id;
     String name;
+    @NotNull
+    @Email
     String email;
-
-    public static UserDto toUserDto(User user) {
-        return new UserDto(user.getId(), user.getName(), user.getEmail());
-    }
 }

@@ -3,6 +3,8 @@ package ru.practicum.shareit.item;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.NotFoundException;
+import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemDtoMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.InMemoryUserRepository;
 
@@ -12,33 +14,35 @@ import java.util.List;
 @AllArgsConstructor
 public class ItemServiceImpl implements ItemService {
 
-    private InMemoryItemRepository repository;
+    private InMemoryItemRepository itemRepository;
     private InMemoryUserRepository userRepository;
+    private ItemDtoMapper itemDtoMapper;
+
 
     @Override
-    public Item create(long userId, Item item) {
+    public ItemDto create(long userId, ItemDto itemDto) {
         if (userRepository.getById(userId) == null) {
             throw new NotFoundException("no owner with such ID " + userId);
         }
-        item.setOwner(userRepository.getById(userId));
-        return repository.save(item);
+        Item itemToSave = itemDtoMapper.toItemFromDto(itemDto).setOwner(userRepository.getById(userId));
+        return itemDtoMapper.toItemDto(itemRepository.save(itemToSave));
     }
 
     @Override
-    public Item update(long id, long userId, Item item) {
+    public ItemDto update(long id, long userId, ItemDto itemDto) {
         if (userRepository.getById(userId) == null) {
             throw new NotFoundException("no owner with such ID " + userId);
         }
-        if (repository.getById(id).getOwner().getId() != userId) {
+        if (itemRepository.getById(id).getOwner().getId() != userId) {
             throw new NotFoundException("Item has another owner");
         }
-        item.setId(id);
-        return repository.update(item);
+        Item itemToUpdate = itemDtoMapper.toItemFromDto(itemDto).setId(id);
+        return itemDtoMapper.toItemDto(itemRepository.update(itemToUpdate));
     }
 
     @Override
     public List<Item> getAllItemsByOwner(long userId) {
-        return repository.getAllItemsByOwner(userId);
+        return itemRepository.getAllItemsByOwner(userId);
     }
 
     @Override
@@ -46,13 +50,13 @@ public class ItemServiceImpl implements ItemService {
         if (text.isEmpty()) {
             return List.of();
         } else {
-            return repository.findByQuery(text);
+            return itemRepository.findByQuery(text);
         }
     }
 
     @Override
-    public Item getItemById(long itemId) {
-        return repository.getById(itemId);
+    public ItemDto getItemById(long itemId) {
+        return itemDtoMapper.toItemDto(itemRepository.getById(itemId));
     }
 
 

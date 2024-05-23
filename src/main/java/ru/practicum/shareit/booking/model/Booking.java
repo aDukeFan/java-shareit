@@ -1,4 +1,4 @@
-package ru.practicum.shareit.booking;
+package ru.practicum.shareit.booking.model;
 
 import lombok.AccessLevel;
 import lombok.experimental.Accessors;
@@ -8,9 +8,6 @@ import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
 
-/**
- * TODO Sprint add-bookings.
- */
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Accessors(chain = true)
 public class Booking {

@@ -8,6 +8,7 @@ import ru.practicum.shareit.user.model.User;
 
 import javax.validation.ValidationException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -48,7 +49,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> getAll() {
-        return repository.getAll();
+    public List<UserDto> getAll() {
+        return repository.getAll().stream()
+                .map(user -> userDtoMapper.toUserDto(user))
+                .collect(Collectors.toList());
     }
 }

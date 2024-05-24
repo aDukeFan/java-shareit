@@ -9,6 +9,7 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.InMemoryUserRepository;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -24,7 +25,8 @@ public class ItemServiceImpl implements ItemService {
         if (userRepository.getById(userId) == null) {
             throw new NotFoundException("no owner with such ID " + userId);
         }
-        Item itemToSave = itemDtoMapper.toItemFromDto(itemDto).setOwner(userRepository.getById(userId));
+        Item itemToSave = itemDtoMapper.toItemFromDto(itemDto)
+                .setOwner(userRepository.getById(userId));
         return itemDtoMapper.toItemDto(itemRepository.save(itemToSave));
     }
 
@@ -41,16 +43,20 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<Item> getAllItemsByOwner(long userId) {
-        return itemRepository.getAllItemsByOwner(userId);
+    public List<ItemDto> getAllItemsByOwner(long userId) {
+        return itemRepository.getAllItemsByOwner(userId).stream()
+                .map(item -> itemDtoMapper.toItemDto(item))
+                .collect(Collectors.toList());
     }
 
     @Override
-    public List<Item> findByQuery(String text) {
+    public List<ItemDto> findByQuery(String text) {
         if (text.isEmpty()) {
             return List.of();
         } else {
-            return itemRepository.findByQuery(text);
+            return itemRepository.findByQuery(text).stream()
+                    .map(item -> itemDtoMapper.toItemDto(item))
+                    .collect(Collectors.toList());
         }
     }
 

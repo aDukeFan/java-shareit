@@ -1,16 +1,19 @@
 package ru.practicum.shareit.item;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemDtoMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.InMemoryUserRepository;
+import ru.practicum.shareit.util.Constants;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 public class ItemServiceImpl implements ItemService {
@@ -23,7 +26,8 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemDto create(long userId, ItemDto itemDto) {
         if (userRepository.getById(userId) == null) {
-            throw new NotFoundException("no owner with such ID " + userId);
+            log.info("Try to save or item with wrong owner id: {}", userId);
+            throw new NotFoundException(Constants.MESSAGE_BAD_OWNER_ID + userId);
         }
         Item itemToSave = itemDtoMapper.toItemFromDto(itemDto)
                 .setOwner(userRepository.getById(userId));
@@ -32,11 +36,8 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto update(long id, long userId, ItemDto itemDto) {
-        if (userRepository.getById(userId) == null) {
-            throw new NotFoundException("no owner with such ID " + userId);
-        }
         if (itemRepository.getById(id).getOwner().getId() != userId) {
-            throw new NotFoundException("Item has another owner");
+            throw new NotFoundException(Constants.MESSAGE_BAD_OWNER_ID + userId);
         }
         Item item = itemRepository.getById(id);
         Item itemToUpdate = itemDtoMapper.toItemFromDtoForUpdate(itemDto, item);
@@ -65,6 +66,5 @@ public class ItemServiceImpl implements ItemService {
     public ItemDto getItemById(long itemId) {
         return itemDtoMapper.toItemDto(itemRepository.getById(itemId));
     }
-
 
 }

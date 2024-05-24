@@ -24,4 +24,19 @@ public class ItemDtoMapper {
                 .setOwner(itemDto.getOwner())
                 .setRequest(itemDto.getRequest());
     }
+
+    public Item toItemFromDtoForUpdate(ItemDto itemDto, Item itemToUpdate) {
+        if (itemDto != null) {
+            if (itemDto.getName() != null) {
+                itemToUpdate.setName(itemDto.getName());
+            }
+            if (itemDto.getDescription() != null) {
+                itemToUpdate.setDescription(itemDto.getDescription());
+            }
+            if (itemDto.getAvailable() != null) {
+                itemToUpdate.setAvailable(itemDto.getAvailable());
+            }
+        }
+        return itemToUpdate;
+    }
 }

@@ -24,19 +24,8 @@ public class InMemoryItemRepository {
     }
 
     public Item update(Item item) {
-        Item itemToUpdate = getById(item.getId());
-        if (itemToUpdate != null) {
-            if (item.getName() != null) {
-                itemToUpdate.setName(item.getName());
-            }
-            if (item.getDescription() != null) {
-                itemToUpdate.setDescription(item.getDescription());
-            }
-            if (item.getAvailable() != null) {
-                itemToUpdate.setAvailable(item.getAvailable());
-            }
-        }
-        return itemToUpdate;
+        items.put(item.getId(), item);
+        return item;
     }
 
     public Item getById(long id) {

@@ -34,7 +34,8 @@ public class UserServiceImpl implements UserService {
                 .anyMatch(user1 -> user1.getEmail().equals(userDto.getEmail()))) {
             throw new ValidationException("Email must be unique");
         }
-        User updatedUser = userDtoMapper.toUserFromDto(userDto).setId(userId);
+        User user = repository.getById(userId);
+        User updatedUser = userDtoMapper.toUserFromDtoToUpdate(userDto, user);
         return userDtoMapper.toUserDto(repository.update(updatedUser));
     }
 

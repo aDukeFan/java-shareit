@@ -38,7 +38,8 @@ public class ItemServiceImpl implements ItemService {
         if (itemRepository.getById(id).getOwner().getId() != userId) {
             throw new NotFoundException("Item has another owner");
         }
-        Item itemToUpdate = itemDtoMapper.toItemFromDto(itemDto).setId(id);
+        Item item = itemRepository.getById(id);
+        Item itemToUpdate = itemDtoMapper.toItemFromDtoForUpdate(itemDto, item);
         return itemDtoMapper.toItemDto(itemRepository.update(itemToUpdate));
     }
 

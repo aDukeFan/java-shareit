@@ -17,4 +17,17 @@ public class UserDtoMapper {
                 .setName(userDto.getName())
                 .setEmail(userDto.getEmail());
     }
+
+    public User toUserFromDtoToUpdate(UserDto userDto, User user) {
+        if (userDto != null) {
+            if (userDto.getName() != null) {
+                user.setName(userDto.getName());
+            }
+            if (userDto.getEmail() != null
+                    && !userDto.getEmail().toLowerCase().equals(user.getEmail())) {
+                user.setEmail(userDto.getEmail());
+            }
+        }
+        return user;
+    }
 }

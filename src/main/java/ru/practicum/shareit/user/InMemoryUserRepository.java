@@ -22,16 +22,8 @@ public class InMemoryUserRepository {
     }
 
     public User update(User user) {
-        User userToUpdate = getById(user.getId());
-        if (userToUpdate != null) {
-            if (user.getName() != null) {
-                userToUpdate.setName(user.getName());
-            }
-            if (user.getEmail() != null) {
-                userToUpdate.setEmail(user.getEmail());
-            }
-        }
-        return userToUpdate;
+        users.put(user.getId(), user);
+        return user;
     }
 
     public void delete(long id) {

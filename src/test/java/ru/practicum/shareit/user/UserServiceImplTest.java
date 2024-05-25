@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class UserServiceImplTest {
 
-    public UserServiceImpl service;
+    private UserServiceImpl service;
 
     @BeforeEach
     void createService() {

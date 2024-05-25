@@ -1,4 +1,4 @@
-package ru.practicum.shareit.request.dto;
+package ru.practicum.shareit.request.model;
 
 import lombok.AccessLevel;
 import lombok.Data;
@@ -8,12 +8,14 @@ import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
 
+
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Accessors(chain = true)
 @Data
-public class ItemRequestDto {
+public class ItemRequest {
     long id;
     String description;
     User requestor;
     LocalDateTime created;
+
 }

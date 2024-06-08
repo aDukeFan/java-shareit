@@ -2,6 +2,7 @@ package ru.practicum.shareit.item;
 
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.util.Constants;
 
@@ -41,5 +42,13 @@ public class ItemController {
     @GetMapping("/search")
     public List<ItemDto> findByQuery(@RequestParam String text) {
         return service.findByQuery(text);
+    }
+
+    @PostMapping("/{id}/comment")
+    public void addComment(@RequestHeader(Constants.X_SHARER_USER_ID) long userId,
+                              @PathVariable long itemId,
+                              @RequestBody CommentDto commentDto) {
+        service.addComment(userId, itemId, commentDto);
+
     }
 }

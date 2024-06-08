@@ -1,32 +1,27 @@
 package ru.practicum.shareit.item.model;
 
+
 import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import lombok.experimental.Accessors;
 import lombok.experimental.FieldDefaults;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
 
+@Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Accessors(chain = true)
-@Getter
-@Setter
 @Entity
-@Table(name = "items", schema = "public")
-public class Item {
+@Table(name = "comments", schema = "public")
+public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
-    @Column(name = "name")
-    String name;
-    @Column(name = "description")
-    String description;
-    @Column(name = "available")
-    Boolean available;
+    @Column(name = "text")
+    String text;
     @ManyToOne
-    User owner;
-    @Column(name = "request")
-    String request;
+    Item item;
+    @OneToOne
+    User client;
 }

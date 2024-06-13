@@ -6,7 +6,6 @@ import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
 import lombok.experimental.FieldDefaults;
-import org.hibernate.validator.constraints.UniqueElements;
 
 import javax.persistence.*;
 
@@ -23,6 +22,6 @@ public class User {
     long id;
     @Column(name = "name")
     String name;
-    @Column(name = "email", unique = true)
+    @Column(name = "email")
     String email;
 }

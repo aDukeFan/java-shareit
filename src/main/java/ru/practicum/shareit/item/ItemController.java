@@ -30,8 +30,9 @@ public class ItemController {
     }
 
     @GetMapping("/{id}")
-    public ItemDto getItemById(@PathVariable long id) {
-        return service.getItemById(id);
+    public ItemDto getItemById(@PathVariable long id,
+                               @RequestHeader(Constants.X_SHARER_USER_ID) long userId) {
+        return service.getItemById(id, userId);
     }
 
     @GetMapping
@@ -44,11 +45,10 @@ public class ItemController {
         return service.findByQuery(text);
     }
 
-    @PostMapping("/{id}/comment")
-    public void addComment(@RequestHeader(Constants.X_SHARER_USER_ID) long userId,
+    @PostMapping("/{itemId}/comment")
+    public CommentDto addComment(@RequestHeader(Constants.X_SHARER_USER_ID) long userId,
                               @PathVariable long itemId,
-                              @RequestBody CommentDto commentDto) {
-        service.addComment(userId, itemId, commentDto);
-
+                              @Valid @RequestBody CommentDto commentDto) {
+        return service.addComment(userId, itemId, commentDto);
     }
 }

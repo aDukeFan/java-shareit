@@ -15,7 +15,8 @@ import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.util.Constants;
 
-import javax.validation.ValidationException;
+import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,7 +37,6 @@ public class BookingServiceImpl implements BookingService {
         Long itemId = bookingDto.getItemId();
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new NotFoundException(Constants.NO_ITEM_WITH_SUCH_ID + itemId));
-        log.info(bookingDto.getStart().toString());
         if (bookingDto.getStart().isAfter(bookingDto.getEnd()) ||
         bookingDto.getStart().equals(bookingDto.getEnd())) {
             throw new BookingTimeException("Wrong Booking time!");
@@ -64,6 +64,9 @@ public class BookingServiceImpl implements BookingService {
         if (booking.getItem().getOwner().getId() != ownerId) {
             throw new NotFoundException(Constants.MESSAGE_BAD_OWNER_ID + ownerId);
         }
+        if (booking.getStatus() == BookingStatus.APPROVED) {
+            throw new BadRequestException("Booking is already APPROVED");
+        }
         if (approved) {
             booking.setStatus(BookingStatus.APPROVED);
         } else {
@@ -80,35 +83,50 @@ public class BookingServiceImpl implements BookingService {
                 || booking.getItem().getOwner().getId() == ownerOrClientId) {
             return booking;
         } else {
-            throw new ValidationException("access denied");
+            throw new NotFoundException("No way, man");
         }
 
     }
 
     @Override
-    public List<Booking> getClientBookings(long clientId, String state) {
-        User client = userRepository.findById(clientId)
-                .orElseThrow(() -> new NotFoundException(Constants.NO_USER_WITH_SUCH_ID + clientId));
+    public List<Booking> getClientBookings(long bookerId, String state) {
+        User booker = userRepository.findById(bookerId)
+                .orElseThrow(() -> new NotFoundException(Constants.NO_USER_WITH_SUCH_ID + bookerId));
+        List<Booking> allBookerBookings = bookingRepository.findAllByBookerId(bookerId);
         switch (state) {
             case "ALL":
-                return bookingRepository.findAll().stream()
-                        .filter(booking -> booking.getBooker().getId() == clientId)
+                return allBookerBookings.stream()
+                        .sorted(Comparator.comparing(Booking::getStart).reversed())
                         .collect(Collectors.toList());
             case "CURRENT":
-                return null;
+                return allBookerBookings.stream()
+                        .filter(booking -> booking.getStart().isBefore(LocalDateTime.now()))
+                        .filter(booking -> booking.getEnd().isAfter(LocalDateTime.now()))
+                        .sorted(Comparator.comparing(Booking::getStart).reversed())
+                        .collect(Collectors.toList());
             case "PAST":
-                return null;
+                return allBookerBookings.stream()
+                        .filter(booking -> booking.getEnd().isBefore(LocalDateTime.now()))
+                        .sorted(Comparator.comparing(Booking::getStart).reversed())
+                        .collect(Collectors.toList());
             case "FUTURE":
-                return null;
+                return allBookerBookings.stream()
+                        .filter(booking -> booking.getStatus() == BookingStatus.APPROVED  || booking.getStatus() == BookingStatus.WAITING)
+                        .filter(booking -> booking.getStart().isAfter(LocalDateTime.now()))
+                        .sorted(Comparator.comparing(Booking::getStart).reversed())
+                        .collect(Collectors.toList());
             case "WAITING":
-                return bookingRepository.findAll().stream()
-                        .filter(booking -> booking.getBooker().getId() == clientId)
+                return allBookerBookings.stream()
                         .filter(booking -> booking.getStatus() == BookingStatus.WAITING)
+                        .sorted(Comparator.comparing(Booking::getStart).reversed())
                         .collect(Collectors.toList());
             case "REJECTED":
-                return null;
+                return allBookerBookings.stream()
+                        .filter(booking -> booking.getStatus() == BookingStatus.REJECTED)
+                        .sorted(Comparator.comparing(Booking::getStart).reversed())
+                        .collect(Collectors.toList());
             default:
-                throw new BadRequestException("Wrong parameter");
+                throw new BadRequestException("Unknown state: UNSUPPORTED_STATUS");
         }
         //        // Получение списка всех бронирований текущего пользователя.
         //        // Эндпоинт — GET /bookings?state={state}.
@@ -133,22 +151,42 @@ public class BookingServiceImpl implements BookingService {
             case "ALL":
                 return bookingRepository.findAll().stream()
                         .filter(booking -> booking.getItem().getOwner().getId() == ownerId)
+                        .sorted(Comparator.comparing(Booking::getStart).reversed())
                         .collect(Collectors.toList());
             case "CURRENT":
-                return null;
+                return bookingRepository.findAll().stream()
+                        .filter(booking -> booking.getItem().getOwner().getId() == ownerId)
+                        .filter(booking -> booking.getStart().isBefore(LocalDateTime.now()))
+                        .filter(booking -> booking.getEnd().isAfter(LocalDateTime.now()))
+                        .sorted(Comparator.comparing(Booking::getStart).reversed())
+                        .collect(Collectors.toList());
             case "PAST":
-                return null;
+                return bookingRepository.findAll().stream()
+                        .filter(booking -> booking.getItem().getOwner().getId() == ownerId)
+                        .filter(booking -> booking.getEnd().isBefore(LocalDateTime.now()))
+                        .sorted(Comparator.comparing(Booking::getStart).reversed())
+                        .collect(Collectors.toList());
             case "FUTURE":
-                return null;
+                return bookingRepository.findAll().stream()
+                        .filter(booking -> booking.getItem().getOwner().getId() == ownerId)
+                        .filter(booking -> booking.getStatus() == BookingStatus.APPROVED || booking.getStatus() == BookingStatus.WAITING)
+                        .filter(booking -> booking.getStart().isAfter(LocalDateTime.now()))
+                        .sorted(Comparator.comparing(Booking::getStart).reversed())
+                        .collect(Collectors.toList());
             case "WAITING":
                 return bookingRepository.findAll().stream()
                         .filter(booking -> booking.getItem().getOwner().getId() == ownerId)
                         .filter(booking -> booking.getStatus() == BookingStatus.WAITING)
+                        .sorted(Comparator.comparing(Booking::getStart).reversed())
                         .collect(Collectors.toList());
             case "REJECTED":
-                return null;
+                return bookingRepository.findAll().stream()
+                        .filter(booking -> booking.getItem().getOwner().getId() == ownerId)
+                        .filter(booking -> booking.getStatus() == BookingStatus.REJECTED)
+                        .sorted(Comparator.comparing(Booking::getStart).reversed())
+                        .collect(Collectors.toList());
             default:
-                throw new BadRequestException("Wrong parameter");
+                throw new BadRequestException("Unknown state: UNSUPPORTED_STATUS");
         }
     }
 }

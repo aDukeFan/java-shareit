@@ -28,8 +28,10 @@ public class Booking {
     @Column(name = "rent_end")
     LocalDateTime end;
     @ManyToOne
+    @JoinColumn(name = "item_id")
     Item item;
     @ManyToOne
+    @JoinColumn(name = "booker_id")
     User booker;
     @Enumerated(EnumType.STRING)
     BookingStatus status;

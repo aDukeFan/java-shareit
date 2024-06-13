@@ -11,11 +11,11 @@ public interface ItemService {
 
     ItemDto update(long id, long userId, ItemDto itemDto);
 
-    ItemDto getItemById(long itemId);
+    ItemDto getItemById(long itemId, long userId);
 
     List<ItemDto> getAllItemsByOwner(long userId);
 
     List<ItemDto> findByQuery(String text);
 
-    void addComment(long userId, long itemId, CommentDto commentDto);
+    CommentDto addComment(long userId, long itemId, CommentDto commentDto);
 }

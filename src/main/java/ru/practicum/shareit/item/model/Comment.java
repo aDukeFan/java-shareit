@@ -8,6 +8,7 @@ import lombok.experimental.FieldDefaults;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -18,10 +19,14 @@ public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
-    @Column(name = "text")
+    @Column(name = "message")
     String text;
+    @Column(name = "created")
+    LocalDateTime localDateTime;
     @ManyToOne
+    @JoinColumn(name = "item_id")
     Item item;
-    @OneToOne
-    User client;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    User author;
 }

@@ -56,7 +56,7 @@ public class ItemServiceImpl implements ItemService {
             throw new NotFoundException(Constants.MESSAGE_BAD_OWNER_ID + userId);
         }
         itemDto.setId(id);
-        Item itemToSave = itemMapper.updateItemFromDto(itemDto, itemToUpdate);// itemDtoMapper.toItemFromDtoForUpdate(itemDto, itemToUpdate);
+        Item itemToSave = itemMapper.updateItemFromDto(itemDto, itemToUpdate);
         return itemMapper.toDto(itemRepository.save(itemToSave));
     }
 
@@ -167,10 +167,6 @@ public class ItemServiceImpl implements ItemService {
                 .filter(booking -> booking.getEnd().isBefore(LocalDateTime.now()))
                 .collect(Collectors.toList());
 
-//        if (bookingRepository.findByItemIdAndBookerId(itemId, userId).isEmpty()) {
-//            throw new BadRequestException("No bookings");
-//        }
-
         if (bookings.isEmpty()) {
             throw new BadRequestException("No bookings");
         }
@@ -183,12 +179,10 @@ public class ItemServiceImpl implements ItemService {
                 .setAuthor(booker)
                 .setItem(itemToComment);
         commentRepository.save(comment);
-        CommentDto commentDto1 = new CommentDto()
+        return new CommentDto()
                 .setId(comment.getId())
                 .setText(comment.getText())
                 .setAuthorName(comment.getAuthor().getName());
-        return commentDto1;
-
     }
 
     // Комментарий можно добавить по эндпоинту POST /items/{itemId}/comment, создайте в контроллере метод для него.

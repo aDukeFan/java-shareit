@@ -161,15 +161,23 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public CommentDto addComment(long userId, long itemId, CommentDto commentDto) {
-        List<Booking> bookings = bookingRepository.findAllByItemId(itemId).stream()
-                .filter(booking -> booking.getBooker().getId() == userId)
-                .filter(booking -> booking.getStatus() == BookingStatus.APPROVED || booking.getStatus() == BookingStatus.CANCELED)
+        List<Booking> bookingsToComment = bookingRepository.findByItemIdAndBookerId(itemId, userId).stream()
+                .filter(booking -> booking.getStatus() == BookingStatus.APPROVED
+                        || booking.getStatus() == BookingStatus.CANCELED)
                 .filter(booking -> booking.getEnd().isBefore(LocalDateTime.now()))
                 .collect(Collectors.toList());
-
-        if (bookings.isEmpty()) {
+        if (bookingsToComment.isEmpty()) {
             throw new BadRequestException("No bookings");
         }
+//        List<Booking> bookings = bookingRepository.findAllByItemId(itemId).stream()
+//                .filter(booking -> booking.getBooker().getId() == userId)
+//                .filter(booking -> booking.getStatus() == BookingStatus.APPROVED || booking.getStatus() == BookingStatus.CANCELED)
+//                .filter(booking -> booking.getEnd().isBefore(LocalDateTime.now()))
+//                .collect(Collectors.toList());
+//        if (bookings.isEmpty()) {
+//            throw new BadRequestException("No bookings");
+//        }
+
         Comment comment = commentDtoMapper.toCommentFromDto(commentDto);
         Item itemToComment = itemRepository.findById(itemId)
                 .orElseThrow(() -> new NotFoundException(Constants.NO_ITEM_WITH_SUCH_ID + itemId));

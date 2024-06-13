@@ -31,9 +31,9 @@ public class BookingServiceImpl implements BookingService {
 
 
     @Override
-    public Booking createBookingRequest(long clientId, BookingDto bookingDto) {
-        User client = userRepository.findById(clientId)
-                .orElseThrow(() -> new NotFoundException(Constants.NO_USER_WITH_SUCH_ID + clientId));
+    public Booking createBookingRequest(long bookerId, BookingDto bookingDto) {
+        User client = userRepository.findById(bookerId)
+                .orElseThrow(() -> new NotFoundException(Constants.NO_USER_WITH_SUCH_ID + bookerId));
         Long itemId = bookingDto.getItemId();
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new NotFoundException(Constants.NO_ITEM_WITH_SUCH_ID + itemId));
@@ -41,7 +41,7 @@ public class BookingServiceImpl implements BookingService {
         bookingDto.getStart().equals(bookingDto.getEnd())) {
             throw new BookingTimeException("Wrong Booking time!");
         }
-        if (item.getOwner().getId() == clientId) {
+        if (item.getOwner().getId() == bookerId) {
             throw new NotFoundException("Owner cant booking item");
         }
         if (!item.getAvailable()) {
@@ -140,12 +140,9 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public List<Booking> getOwnerBookings(long ownerId, String state) {
-        // Этот запрос имеет смысл для владельца хотя бы одной вещи.
-        List<Item> userItems = itemRepository.findAll().stream()
-                .filter(item -> item.getOwner().getId() == ownerId)
-                .collect(Collectors.toList());
-        if (userItems.isEmpty()) {
-            throw new NotFoundException("There is no item of user with such ID: " + ownerId);
+
+        if (itemRepository.findByOwnerId(ownerId).isEmpty()) {
+            throw new NotFoundException("There are no items of user with ID: " + ownerId);
         }
         switch (state) {
             case "ALL":

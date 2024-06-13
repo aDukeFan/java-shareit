@@ -9,6 +9,7 @@ public class CommentDtoMapper {
     public Comment toCommentFromDto(CommentDto commentDto) {
         return new Comment().setText(commentDto.getText());
     }
+
     public CommentDto toDto(Comment comment) {
         return new CommentDto();
     }

@@ -158,7 +158,7 @@ public class BookingServiceImpl implements BookingService {
                         .filter(booking -> booking.getItem().getOwner().getId() == ownerId)
                         .filter(booking -> booking.getStart().isBefore(LocalDateTime.now()))
                         .filter(booking -> booking.getEnd().isAfter(LocalDateTime.now()))
-                        .sorted(Comparator.comparing(Booking::getStart).reversed())
+                        .sorted(Comparator.comparing(Booking::getId))
                         .collect(Collectors.toList());
             case "PAST":
                 return bookingRepository.findAll().stream()

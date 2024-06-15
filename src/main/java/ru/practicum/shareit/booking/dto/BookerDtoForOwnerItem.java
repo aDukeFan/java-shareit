@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 @Setter
 @Getter
 public class BookerDtoForOwnerItem {
+
     long id;
     long bookerId;
     String bookerName;

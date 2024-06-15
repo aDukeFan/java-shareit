@@ -95,9 +95,9 @@ public class ItemServiceImpl implements ItemService {
                     .filter(booking -> booking.getStart().isAfter(LocalDateTime.now()))
                     .findFirst().orElse(null);
             Booking lastBooking = bookings.stream()
-                    .sorted(Comparator.comparing(Booking::getEnd).reversed())
+                    .sorted(Comparator.comparing(Booking::getStart).reversed())
                     .filter(booking -> booking.getStatus() != BookingStatus.REJECTED)
-                    .filter(booking -> booking.getEnd().isBefore(LocalDateTime.now()))
+                    .filter(booking -> booking.getStart().isBefore(LocalDateTime.now()))
                     .findFirst().orElse(null);
             itemDtoOutcomeLong
                     .setLastBooking(bookingMapper.toOwnerItemShow(lastBooking))

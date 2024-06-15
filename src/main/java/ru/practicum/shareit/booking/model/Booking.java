@@ -20,19 +20,20 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "bookings", schema = "public")
 public class Booking {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
-    @Column(name = "rent_start")
-    LocalDateTime start;
-    @Column(name = "rent_end")
-    LocalDateTime end;
     @ManyToOne
     @JoinColumn(name = "item_id")
     Item item;
     @ManyToOne
     @JoinColumn(name = "booker_id")
     User booker;
+    @Column(name = "rent_start")
+    LocalDateTime start;
+    @Column(name = "rent_end")
+    LocalDateTime end;
     @Enumerated(EnumType.STRING)
-    BookingStatus status;
+    BookingStatus status = BookingStatus.WAITING;
 }

@@ -8,7 +8,8 @@ import java.util.List;
 
 @Repository
 public interface ItemRepository extends JpaRepository<Item, Long> {
+
     List<Item> findByOwnerId(long ownerId);
 
-    List<Item> findAllByNameOrDescriptionContainingIgnoreCase(String name, String description);
+    List<Item> findAllByNameOrDescriptionContainingIgnoreCaseAndAvailableTrue(String name, String description);
 }

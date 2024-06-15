@@ -1,5 +1,6 @@
 package ru.practicum.shareit.booking.dto;
 
+
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,15 +15,13 @@ import java.time.LocalDateTime;
 @Accessors(chain = true)
 @Setter
 @Getter
-public class BookingDtoToSend {
+public class BookingDtoIncome {
+
     @NotNull
-    long id;
-    @NotNull
-    long bookerId;
+    long itemId;
     @NotNull
     @FutureOrPresent
     LocalDateTime start;
     @NotNull
     LocalDateTime end;
-
 }

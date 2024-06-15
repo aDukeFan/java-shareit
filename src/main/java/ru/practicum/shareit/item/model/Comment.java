@@ -16,13 +16,14 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "comments", schema = "public")
 public class Comment {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
     @Column(name = "message")
     String text;
     @Column(name = "created")
-    LocalDateTime localDateTime;
+    LocalDateTime createdTime;
     @ManyToOne
     @JoinColumn(name = "item_id")
     Item item;

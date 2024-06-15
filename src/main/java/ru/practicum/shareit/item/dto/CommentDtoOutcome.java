@@ -6,20 +6,15 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 import lombok.experimental.FieldDefaults;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Accessors(chain = true)
-public class CommentDto {
+public class CommentDtoOutcome {
+
     long id;
     String authorName;
-    @NotNull
-    @NotBlank
-    @NotEmpty
     String text;
-    LocalDateTime created = LocalDateTime.now();
+    LocalDateTime created;
 }

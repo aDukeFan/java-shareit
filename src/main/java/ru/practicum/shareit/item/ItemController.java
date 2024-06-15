@@ -2,8 +2,7 @@ package ru.practicum.shareit.item;
 
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.item.dto.CommentDto;
-import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.util.Constants;
 
 import javax.validation.Valid;
@@ -17,38 +16,38 @@ public class ItemController {
     private ItemService service;
 
     @PostMapping
-    public ItemDto create(@RequestHeader(Constants.X_SHARER_USER_ID) long userId,
-                          @Valid @RequestBody ItemDto itemDto) {
-        return service.create(userId, itemDto);
+    public ItemDtoOutcomeWithAvailable create(@RequestHeader(Constants.X_SHARER_USER_ID) long userId,
+                                              @Valid @RequestBody ItemDtoIncome itemDtoIncome) {
+        return service.create(userId, itemDtoIncome);
     }
 
     @PatchMapping("/{id}")
-    public ItemDto update(@PathVariable long id,
-                          @RequestHeader(Constants.X_SHARER_USER_ID) long userId,
-                          @RequestBody ItemDto itemDto) {
+    public ItemDtoOutcomeWithAvailable update(@PathVariable long id,
+                                              @RequestHeader(Constants.X_SHARER_USER_ID) long userId,
+                                              @RequestBody ItemDtoIncome itemDto) {
         return service.update(id, userId, itemDto);
     }
 
     @GetMapping("/{id}")
-    public ItemDto getItemById(@PathVariable long id,
+    public ItemDtoOutcomeLong getItemById(@PathVariable long id,
                                @RequestHeader(Constants.X_SHARER_USER_ID) long userId) {
         return service.getItemById(id, userId);
     }
 
     @GetMapping
-    public List<ItemDto> getAllByOwner(@RequestHeader(Constants.X_SHARER_USER_ID) long userId) {
+    public List<ItemDtoOutcomeLong> getAllByOwner(@RequestHeader(Constants.X_SHARER_USER_ID) long userId) {
         return service.getAllItemsByOwner(userId);
     }
 
     @GetMapping("/search")
-    public List<ItemDto> findByQuery(@RequestParam String text) {
+    public List<ItemDtoOutcomeWithAvailable> findByQuery(@RequestParam String text) {
         return service.findByQuery(text);
     }
 
     @PostMapping("/{itemId}/comment")
-    public CommentDto addComment(@RequestHeader(Constants.X_SHARER_USER_ID) long userId,
-                              @PathVariable long itemId,
-                              @Valid @RequestBody CommentDto commentDto) {
-        return service.addComment(userId, itemId, commentDto);
+    public CommentDtoOutcome addComment(@RequestHeader(Constants.X_SHARER_USER_ID) long userId,
+                                        @PathVariable long itemId,
+                                        @Valid @RequestBody CommentDtoIncome commentDtoIncome) {
+        return service.addComment(userId, itemId, commentDtoIncome);
     }
 }

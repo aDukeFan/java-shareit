@@ -1,6 +1,10 @@
 package ru.practicum.shareit.item;
 
-import ru.practicum.shareit.item.dto.*;
+import ru.practicum.shareit.item.dto.CommentDtoIncome;
+import ru.practicum.shareit.item.dto.CommentDtoOutcome;
+import ru.practicum.shareit.item.dto.ItemDtoIncome;
+import ru.practicum.shareit.item.dto.ItemDtoOutcomeLong;
+import ru.practicum.shareit.item.dto.ItemDtoOutcomeWithAvailable;
 
 import java.util.List;
 

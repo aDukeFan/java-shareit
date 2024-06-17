@@ -1,6 +1,11 @@
 package ru.practicum.shareit.item;
 
-import org.mapstruct.*;
+
+import org.mapstruct.BeanMapping;
+import org.mapstruct.Mapper;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValueCheckStrategy;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 import ru.practicum.shareit.item.dto.ItemDtoIncome;
 import ru.practicum.shareit.item.dto.ItemDtoOutcomeWithAvailable;
 import ru.practicum.shareit.item.dto.ItemDtoOutcomeLong;

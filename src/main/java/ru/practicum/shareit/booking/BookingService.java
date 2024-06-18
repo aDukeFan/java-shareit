@@ -2,6 +2,7 @@ package ru.practicum.shareit.booking;
 
 import ru.practicum.shareit.booking.dto.BookingDtoIncome;
 import ru.practicum.shareit.booking.dto.BookingDtoOutcomeLong;
+import ru.practicum.shareit.booking.model.BookingRequestUserType;
 
 import java.util.List;
 
@@ -13,7 +14,5 @@ public interface BookingService {
 
     BookingDtoOutcomeLong getBooking(long ownerOrClientId, long bookingId);
 
-    List<BookingDtoOutcomeLong> getClientBookings(long clientId, String state);
-
-    List<BookingDtoOutcomeLong> getOwnerBookings(long ownerId, String state);
+    List<BookingDtoOutcomeLong> getAllBookingsById(BookingRequestUserType type, long id, String state);
 }

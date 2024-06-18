@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingDtoIncome;
 import ru.practicum.shareit.booking.dto.BookingDtoOutcomeLong;
 import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.model.BookingRequestUserType;
+import ru.practicum.shareit.booking.model.BookingState;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.exception.BadRequestException;
 import ru.practicum.shareit.exception.BookingTimeException;
@@ -17,6 +19,7 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.util.Constants;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -86,59 +89,70 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDtoOutcomeLong> getClientBookings(long bookerId, String state) {
-        userRepository.findById(bookerId)
-                .orElseThrow(() -> new NotFoundException(Constants.NO_USER_WITH_SUCH_ID + bookerId));
-        List<BookingDtoOutcomeLong> allBookerBookings = bookingRepository
-                .findAllByBookerIdOrderByStartDesc(bookerId).stream()
-                .map(booking -> bookingMapper.toSendLong(booking))
-                .collect(Collectors.toList());
-        return makeBookingListByState(allBookerBookings, state);
+    public List<BookingDtoOutcomeLong> getAllBookingsById(BookingRequestUserType type, long id, String state) {
+        userRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(Constants.NO_USER_WITH_SUCH_ID + id));
+        if (!Arrays.toString(BookingState.values()).contains(state)) {
+            throw new BadRequestException("Unknown state: UNSUPPORTED_STATUS");
+        }
+        switch (type) {
+            case BOOKER:
+                return makeBookingListByState(getAllBookerBookings(id), state);
+            case OWNER:
+                return makeBookingListByState(getAllOwnerBookings(id), state);
+            default:
+                return List.of();
+        }
     }
 
-    @Override
-    public List<BookingDtoOutcomeLong> getOwnerBookings(long ownerId, String state) {
+    private List<Booking> getAllBookerBookings(long bookerId) {
+        return bookingRepository
+                .findAllByBookerIdOrderByStartDesc(bookerId);
+    }
+
+    private List<Booking> getAllOwnerBookings(long ownerId) {
         List<Long> itemsIdsOfOwner = itemRepository.findByOwnerId(ownerId).stream()
                 .map(Item::getId)
                 .collect(Collectors.toList());
         if (itemsIdsOfOwner.isEmpty()) {
             throw new NotFoundException("There are no items of user with ID: " + ownerId);
         }
-        List<BookingDtoOutcomeLong> bookingsOfItemOwner = bookingRepository
-                .findAllByItemIdInOrderByStartDesc(itemsIdsOfOwner).stream()
-                .map(booking -> bookingMapper.toSendLong(booking)).collect(Collectors.toList());
-        return makeBookingListByState(bookingsOfItemOwner, state);
+        return bookingRepository
+                .findAllByItemIdInOrderByStartDesc(itemsIdsOfOwner);
     }
 
-    private List<BookingDtoOutcomeLong> makeBookingListByState(List<BookingDtoOutcomeLong> list, String state) {
-        switch (state) {
-            case "ALL":
+    private List<BookingDtoOutcomeLong> makeBookingListByState(List<Booking> bookings, String state) {
+        List<BookingDtoOutcomeLong> list = bookings.stream()
+                .map(booking -> bookingMapper.toSendLong(booking))
+                .collect(Collectors.toList());
+        switch (BookingState.valueOf(state)) {
+            case ALL:
                 return list;
-            case "CURRENT":
+            case CURRENT:
                 return list.stream()
                         .filter(booking -> booking.getStart().isBefore(LocalDateTime.now()))
                         .filter(booking -> booking.getEnd().isAfter(LocalDateTime.now()))
                         .collect(Collectors.toList());
-            case "PAST":
+            case PAST:
                 return list.stream()
                         .filter(booking -> booking.getEnd().isBefore(LocalDateTime.now()))
                         .collect(Collectors.toList());
-            case "FUTURE":
+            case FUTURE:
                 return list.stream()
                         .filter(booking -> booking.getStatus() == BookingStatus.APPROVED
                                 || booking.getStatus() == BookingStatus.WAITING)
                         .filter(booking -> booking.getStart().isAfter(LocalDateTime.now()))
                         .collect(Collectors.toList());
-            case "WAITING":
+            case WAITING:
                 return list.stream()
                         .filter(booking -> booking.getStatus() == BookingStatus.WAITING)
                         .collect(Collectors.toList());
-            case "REJECTED":
+            case REJECTED:
                 return list.stream()
                         .filter(booking -> booking.getStatus() == BookingStatus.REJECTED)
                         .collect(Collectors.toList());
             default:
-                throw new BadRequestException("Unknown state: UNSUPPORTED_STATUS");
+                return List.of();
         }
     }
 }

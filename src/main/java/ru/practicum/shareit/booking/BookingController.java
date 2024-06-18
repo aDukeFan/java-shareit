@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.shareit.booking.dto.BookingDtoIncome;
 import ru.practicum.shareit.booking.dto.BookingDtoOutcomeLong;
+import ru.practicum.shareit.booking.model.BookingRequestUserType;
 import ru.practicum.shareit.util.Constants;
 
 import javax.validation.Valid;
@@ -44,14 +45,14 @@ public class BookingController {
     }
 
     @GetMapping()
-    public List<BookingDtoOutcomeLong> getClientBookings(@RequestHeader(Constants.X_SHARER_USER_ID) long clientId,
+    public List<BookingDtoOutcomeLong> getBookerBookings(@RequestHeader(Constants.X_SHARER_USER_ID) long clientId,
                                                          @RequestParam(required = false, defaultValue = "ALL") String state) {
-        return service.getClientBookings(clientId, state);
+        return service.getAllBookingsById(BookingRequestUserType.BOOKER, clientId, state);
     }
 
     @GetMapping("/owner")
     public List<BookingDtoOutcomeLong> getOwnerBookings(@RequestHeader(Constants.X_SHARER_USER_ID) long ownerId,
                                                         @RequestParam(required = false, defaultValue = "ALL") String state) {
-        return service.getOwnerBookings(ownerId, state);
+        return service.getAllBookingsById(BookingRequestUserType.OWNER, ownerId, state);
     }
 }

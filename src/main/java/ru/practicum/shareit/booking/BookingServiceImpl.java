@@ -58,7 +58,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public BookingDtoOutcomeLong approveBooking(long ownerId, long bookingId, Boolean approved) {
         Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new NotFoundException("No booking with such ID " + bookingId));
+                .orElseThrow(() -> new NotFoundException(Constants.NO_BOOKING_WITH_SUCH_ID + bookingId));
         if (booking.getItem().getOwner().getId() != ownerId) {
             throw new NotFoundException(Constants.MESSAGE_BAD_OWNER_ID + ownerId);
         }
@@ -76,7 +76,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public BookingDtoOutcomeLong getBooking(long ownerOrClientId, long bookingId) {
         Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new NotFoundException("No booking with such ID " + bookingId));
+                .orElseThrow(() -> new NotFoundException(Constants.NO_BOOKING_WITH_SUCH_ID + bookingId));
         if (booking.getBooker().getId() == ownerOrClientId
                 || booking.getItem().getOwner().getId() == ownerOrClientId) {
             return bookingMapper.toSendLong(booking);

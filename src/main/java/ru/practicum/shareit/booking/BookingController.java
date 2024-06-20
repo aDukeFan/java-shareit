@@ -12,7 +12,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.shareit.booking.dto.BookingDtoIncome;
 import ru.practicum.shareit.booking.dto.BookingDtoOutcomeLong;
-import ru.practicum.shareit.booking.model.BookingRequestUserType;
+import ru.practicum.shareit.booking.getter_request.model.GetterRequest;
+import ru.practicum.shareit.booking.getter_request.model.GetterRequestType;
 import ru.practicum.shareit.util.Constants;
 
 import javax.validation.Valid;
@@ -26,9 +27,9 @@ public class BookingController {
     private BookingService service;
 
     @PostMapping
-    public BookingDtoOutcomeLong createBooking(@RequestHeader(Constants.X_SHARER_USER_ID) long clientId,
+    public BookingDtoOutcomeLong createBooking(@RequestHeader(Constants.X_SHARER_USER_ID) long bookerId,
                                                @Valid @RequestBody BookingDtoIncome income) {
-        return service.createBooking(clientId, income);
+        return service.createBooking(bookerId, income);
     }
 
     @PatchMapping("/{bookingId}")
@@ -45,14 +46,22 @@ public class BookingController {
     }
 
     @GetMapping()
-    public List<BookingDtoOutcomeLong> getBookerBookings(@RequestHeader(Constants.X_SHARER_USER_ID) long clientId,
+    public List<BookingDtoOutcomeLong> getBookerBookings(@RequestHeader(Constants.X_SHARER_USER_ID) long bookerId,
                                                          @RequestParam(required = false, defaultValue = "ALL") String state) {
-        return service.getAllBookingsById(BookingRequestUserType.BOOKER, clientId, state);
+        GetterRequest request = new GetterRequest()
+                .setUserId(bookerId)
+                .setState(state)
+                .setType(GetterRequestType.BOOKER);
+        return service.getAllBookingsById(request);
     }
 
     @GetMapping("/owner")
     public List<BookingDtoOutcomeLong> getOwnerBookings(@RequestHeader(Constants.X_SHARER_USER_ID) long ownerId,
                                                         @RequestParam(required = false, defaultValue = "ALL") String state) {
-        return service.getAllBookingsById(BookingRequestUserType.OWNER, ownerId, state);
+        GetterRequest request = new GetterRequest()
+                .setUserId(ownerId)
+                .setState(state)
+                .setType(GetterRequestType.OWNER);
+        return service.getAllBookingsById(request);
     }
 }

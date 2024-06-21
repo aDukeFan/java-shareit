@@ -2,6 +2,9 @@ package ru.practicum.shareit.user;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.user.dto.UserDto;
@@ -27,6 +30,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @CachePut(value = "userDto", key = "#userId")
     public UserDto update(long userId, UserDto userDto) {
         User userToUpdate = repository.findById(userId)
                 .orElseThrow(() -> new ValidationException(Constants.NO_USER_WITH_SUCH_ID + userId));
@@ -36,11 +40,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @CacheEvict("users")
     public void delete(long userId) {
         repository.deleteById(userId);
     }
 
     @Override
+    @Cacheable("users")
     public UserDto get(long userId) {
         User user = repository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(Constants.NO_USER_WITH_SUCH_ID + userId));
@@ -48,6 +54,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Cacheable("users")
     public List<UserDto> getAll() {
         return repository.findAll().stream()
                 .map(userMapper::toDto)

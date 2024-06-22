@@ -2,9 +2,12 @@ package ru.practicum.shareit.user;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.dto.UserDtoMapper;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.util.Constants;
 
@@ -17,48 +20,44 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class UserServiceImpl implements UserService {
 
-    private InMemoryUserRepository repository;
-    private UserDtoMapper userDtoMapper;
+    private UserRepository repository;
+    private final UserMapper userMapper;
 
     @Override
     public UserDto create(UserDto userDto) {
-        throwValidExceptionForDuplicateEmail(userDto.getEmail());
-        User savedUser = repository.save(userDtoMapper.toUserFromDto(userDto));
-        return userDtoMapper.toUserDto(savedUser);
+        User savedUser = repository.save(userMapper.toUser(userDto));
+        return userMapper.toDto(savedUser);
     }
 
     @Override
+    @CachePut(value = "userDto", key = "#userId")
     public UserDto update(long userId, UserDto userDto) {
-        User user = repository.getById(userId);
-        if (userDto.getEmail() != null && !userDto.getEmail().equals(user.getEmail())) {
-            repository.getEmails().remove(user.getEmail());
-            throwValidExceptionForDuplicateEmail(userDto.getEmail());
-        }
-        User updatedUser = userDtoMapper.toUserFromDtoToUpdate(userDto, user);
-        return userDtoMapper.toUserDto(repository.update(updatedUser));
+        User userToUpdate = repository.findById(userId)
+                .orElseThrow(() -> new ValidationException(Constants.NO_USER_WITH_SUCH_ID + userId));
+        userDto.setId(userId);
+        User savedUser = repository.save(userMapper.updateUserFromDto(userDto, userToUpdate));
+        return userMapper.toDto(savedUser);
     }
 
     @Override
+    @CacheEvict("users")
     public void delete(long userId) {
-        repository.delete(userId);
+        repository.deleteById(userId);
     }
 
     @Override
+    @Cacheable("users")
     public UserDto get(long userId) {
-        return userDtoMapper.toUserDto(repository.getById(userId));
+        User user = repository.findById(userId)
+                .orElseThrow(() -> new NotFoundException(Constants.NO_USER_WITH_SUCH_ID + userId));
+        return userMapper.toDto(user);
     }
 
     @Override
+    @Cacheable("users")
     public List<UserDto> getAll() {
-        return repository.getAll().stream()
-                .map(user -> userDtoMapper.toUserDto(user))
+        return repository.findAll().stream()
+                .map(userMapper::toDto)
                 .collect(Collectors.toList());
-    }
-
-    private void throwValidExceptionForDuplicateEmail(String email) {
-        if (repository.getEmails().contains(email)) {
-            log.info("Try to save or update user with duplicate email: {}", email);
-            throw new ValidationException(Constants.MESSAGE_FOR_DUPLICATE_EMAIL + email);
-        }
     }
 }

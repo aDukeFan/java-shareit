@@ -1,21 +1,18 @@
-package ru.practicum.shareit.booking.model;
+package ru.practicum.shareit.item.model;
+
 
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import lombok.experimental.Accessors;
 import lombok.experimental.FieldDefaults;
-import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
+import javax.persistence.Id;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -25,24 +22,21 @@ import java.time.LocalDateTime;
 @Accessors(chain = true)
 @Getter
 @Setter
-@ToString
 @Entity
-@Table(name = "bookings", schema = "public")
-public class Booking {
+@Table(name = "comments", schema = "public")
+public class Comment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
+    @Column(name = "message")
+    String text;
+    @Column(name = "created")
+    LocalDateTime createdTime;
     @ManyToOne
     @JoinColumn(name = "item_id")
     Item item;
     @ManyToOne
-    @JoinColumn(name = "booker_id")
-    User booker;
-    @Column(name = "rent_start")
-    LocalDateTime start;
-    @Column(name = "rent_end")
-    LocalDateTime end;
-    @Enumerated(EnumType.STRING)
-    BookingStatus status = BookingStatus.WAITING;
+    @JoinColumn(name = "user_id")
+    User author;
 }

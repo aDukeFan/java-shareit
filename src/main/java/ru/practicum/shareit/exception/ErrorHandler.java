@@ -21,4 +21,16 @@ public class ErrorHandler {
     public ErrorResponse handleDuplicateEmail(final ValidationException exception) {
         return new ErrorResponse(exception.getMessage());
     }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleBadBookingTime(final BookingTimeException exception) {
+        return new ErrorResponse(exception.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleBadRequest(final BadRequestException exception) {
+        return new ErrorResponse(exception.getMessage());
+    }
 }

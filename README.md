@@ -1,8 +1,11 @@
 # java-shareit
-## Сервис для обмена вещами
-* Проект разрабатывается на языке Java версии 11
-* На основе Spring Boot 2.7.2
+## sharing service
+### 
+* written in Java 11
+* based on Spring Boot 2.7.18
+* with PostgreSQL DateBase
 
 ### Последние изменения
-* Добавлены пользователи
-* Добавлены вещи и поиск по ним
+* add bookings 
+* add users
+* add items

@@ -11,10 +11,11 @@ import lombok.experimental.FieldDefaults;
 @Getter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Accessors(chain = true)
-public class ItemDtoOutcomeWithAvailable {
+public class ItemDtoOutcomeAvailableRequest {
 
     long id;
     String name;
     String description;
     Boolean available;
+    Long requestId;
 }

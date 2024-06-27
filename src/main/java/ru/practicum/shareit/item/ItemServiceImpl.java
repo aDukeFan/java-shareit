@@ -13,9 +13,10 @@ import ru.practicum.shareit.item.dto.CommentDtoIncome;
 import ru.practicum.shareit.item.dto.CommentDtoOutcome;
 import ru.practicum.shareit.item.dto.ItemDtoIncome;
 import ru.practicum.shareit.item.dto.ItemDtoOutcomeLong;
-import ru.practicum.shareit.item.dto.ItemDtoOutcomeWithAvailable;
+import ru.practicum.shareit.item.dto.ItemDtoOutcomeAvailableRequest;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.request.RequestRepository;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.util.Constants;
@@ -34,6 +35,7 @@ public class ItemServiceImpl implements ItemService {
     private ItemRepository itemRepository;
     private UserRepository userRepository;
     private CommentRepository commentRepository;
+    private RequestRepository requestRepository;
     private CommentMapper commentMapper;
     private BookingRepository bookingRepository;
     private ItemMapper itemMapper;
@@ -41,23 +43,28 @@ public class ItemServiceImpl implements ItemService {
 
 
     @Override
-    public ItemDtoOutcomeWithAvailable create(long userId, ItemDtoIncome itemDtoIncome) {
+    public ItemDtoOutcomeAvailableRequest create(long userId, ItemDtoIncome itemDtoIncome) {
         User owner = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(Constants.MESSAGE_BAD_OWNER_ID + userId));
+        Long requestId = itemDtoIncome.getRequestId();
+        if (requestId != null) {
+            requestRepository.findById(requestId)
+                    .orElseThrow(() -> new NotFoundException("No request with ID " + requestId));
+        }
         Item item = itemMapper.toSave(itemDtoIncome)
                 .setOwner(owner);
-        return itemMapper.toSendAfterSave(itemRepository.save(item));
+        return itemMapper.toSend(itemRepository.save(item));
     }
 
     @Override
-    public ItemDtoOutcomeWithAvailable update(long id, long userId, ItemDtoIncome itemDto) {
+    public ItemDtoOutcomeAvailableRequest update(long id, long userId, ItemDtoIncome itemDto) {
         Item itemToUpdate = itemRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(Constants.NO_ITEM_WITH_SUCH_ID + id));
         if (itemToUpdate.getOwner().getId() != userId) {
             throw new NotFoundException(Constants.MESSAGE_BAD_OWNER_ID + userId);
         }
         Item itemToSave = itemMapper.updateItemFromDto(itemDto, itemToUpdate).setId(id);
-        return itemMapper.toSendAfterSave(itemRepository.save(itemToSave));
+        return itemMapper.toSend(itemRepository.save(itemToSave));
     }
 
     @Override
@@ -70,14 +77,14 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDtoOutcomeWithAvailable> findByQuery(String text) {
+    public List<ItemDtoOutcomeAvailableRequest> findByQuery(String text) {
         if (text.isEmpty()) {
             return List.of();
         } else {
             return itemRepository
                     .findAllByNameOrDescriptionContainingIgnoreCaseAndAvailableTrue(text, text)
                     .stream()
-                    .map(item -> itemMapper.toSendAfterSave(item))
+                    .map(item -> itemMapper.toSend(item))
                     .collect(Collectors.toList());
         }
     }

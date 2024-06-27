@@ -8,6 +8,10 @@ import java.time.temporal.ChronoUnit;
 
 public class BookingTimeChecker extends CreateRequestChecker {
 
+    public BookingTimeChecker(CreateRequestChecker next) {
+        super(next);
+    }
+
     @Override
     public void check(CreateRequest request) {
         LocalDateTime start = request.getStart().truncatedTo(ChronoUnit.SECONDS);

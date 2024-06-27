@@ -1,12 +1,14 @@
 package ru.practicum.shareit.booking.creator_request.checker;
 
+import lombok.AllArgsConstructor;
 import lombok.Setter;
 import ru.practicum.shareit.booking.creator_request.model.CreateRequest;
 
 @Setter
+@AllArgsConstructor
 public abstract class CreateRequestChecker {
 
-    private CreateRequestChecker next;
+    private final CreateRequestChecker next;
 
     public void checkNext(CreateRequest request) {
         if (next != null) {

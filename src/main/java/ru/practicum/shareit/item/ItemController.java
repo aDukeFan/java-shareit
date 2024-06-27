@@ -14,7 +14,7 @@ import ru.practicum.shareit.item.dto.CommentDtoIncome;
 import ru.practicum.shareit.item.dto.CommentDtoOutcome;
 import ru.practicum.shareit.item.dto.ItemDtoIncome;
 import ru.practicum.shareit.item.dto.ItemDtoOutcomeLong;
-import ru.practicum.shareit.item.dto.ItemDtoOutcomeWithAvailable;
+import ru.practicum.shareit.item.dto.ItemDtoOutcomeAvailableRequest;
 import ru.practicum.shareit.util.Constants;
 
 import javax.validation.Valid;
@@ -28,15 +28,15 @@ public class ItemController {
     private ItemService service;
 
     @PostMapping
-    public ItemDtoOutcomeWithAvailable create(@RequestHeader(Constants.X_SHARER_USER_ID) long userId,
-                                              @Valid @RequestBody ItemDtoIncome itemDtoIncome) {
+    public ItemDtoOutcomeAvailableRequest create(@RequestHeader(Constants.X_SHARER_USER_ID) long userId,
+                                                 @Valid @RequestBody ItemDtoIncome itemDtoIncome) {
         return service.create(userId, itemDtoIncome);
     }
 
     @PatchMapping("/{id}")
-    public ItemDtoOutcomeWithAvailable update(@PathVariable long id,
-                                              @RequestHeader(Constants.X_SHARER_USER_ID) long userId,
-                                              @RequestBody ItemDtoIncome itemDto) {
+    public ItemDtoOutcomeAvailableRequest update(@PathVariable long id,
+                                                 @RequestHeader(Constants.X_SHARER_USER_ID) long userId,
+                                                 @RequestBody ItemDtoIncome itemDto) {
         return service.update(id, userId, itemDto);
     }
 
@@ -52,7 +52,7 @@ public class ItemController {
     }
 
     @GetMapping("/search")
-    public List<ItemDtoOutcomeWithAvailable> findByQuery(@RequestParam String text) {
+    public List<ItemDtoOutcomeAvailableRequest> findByQuery(@RequestParam String text) {
         return service.findByQuery(text);
     }
 

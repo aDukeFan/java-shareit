@@ -5,6 +5,10 @@ import ru.practicum.shareit.exception.NotFoundException;
 
 public class IsBookerOwnerChecker extends CreateRequestChecker {
 
+    public IsBookerOwnerChecker(CreateRequestChecker next) {
+        super(next);
+    }
+
     @Override
     public void check(CreateRequest request) {
         if (request.getBookerId() == request.getOwnerId()) {

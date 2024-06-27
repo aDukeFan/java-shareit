@@ -38,6 +38,9 @@ public class BookingServiceImpl implements BookingService {
     private ItemRepository itemRepository;
     private BookingRepository bookingRepository;
     private BookingMapper bookingMapper;
+    private final CreateRequestChecker checkerChain = new BookingTimeChecker
+            (new IsBookerOwnerChecker
+                    (new IsAvailableChecker(null)));
 
     @Override
     public BookingDtoOutcomeLong createBooking(long bookerId, BookingDtoIncome bookingDtoIncome) {
@@ -54,12 +57,7 @@ public class BookingServiceImpl implements BookingService {
                 .setBookerId(bookerId)
                 .setOwnerId(item.getOwner().getId())
                 .setAvailable(item.getAvailable());
-        CreateRequestChecker timeChecker = new BookingTimeChecker();
-        CreateRequestChecker isBookerOwnerChecker = new IsBookerOwnerChecker();
-        CreateRequestChecker isAvailableChecker = new IsAvailableChecker();
-        timeChecker.setNext(isBookerOwnerChecker);
-        isBookerOwnerChecker.setNext(isAvailableChecker);
-        timeChecker.check(request);
+        checkerChain.check(request);
         Booking booking = bookingMapper.toSave(bookingDtoIncome)
                 .setItem(item)
                 .setBooker(booker);

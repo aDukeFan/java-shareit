@@ -16,9 +16,9 @@ public interface ItemService {
 
     ItemDtoOutcomeLong getItemById(long itemId, long userId);
 
-    List<ItemDtoOutcomeLong> getAllItemsByOwner(long userId);
+    List<ItemDtoOutcomeLong> getAllItemsByOwner(long userId, Integer from, Integer size);
 
-    List<ItemDtoOutcomeAvailableRequest> findByQuery(String text);
+    List<ItemDtoOutcomeAvailableRequest> findByQuery(String text, Integer from, Integer size);
 
     CommentDtoOutcome addComment(long userId, long itemId, CommentDtoIncome commentDtoIncome);
 }

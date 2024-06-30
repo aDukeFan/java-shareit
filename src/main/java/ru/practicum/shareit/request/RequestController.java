@@ -1,6 +1,7 @@
 package ru.practicum.shareit.request;
 
 import lombok.AllArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -9,18 +10,20 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import ru.practicum.shareit.request.dto.RequestDtoOutcome;
 import ru.practicum.shareit.request.dto.RequestDtoIncome;
+import ru.practicum.shareit.request.dto.RequestDtoOutcome;
 import ru.practicum.shareit.request.dto.RequestDtoWithItemList;
 import ru.practicum.shareit.util.Constants;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import java.util.List;
 
 @RestController
 @RequestMapping(path = "/requests")
 @AllArgsConstructor
-public class ItemRequestController {
+@Validated
+public class RequestController {
 
     private RequestService service;
 
@@ -43,6 +46,7 @@ public class ItemRequestController {
                                                  @PathVariable long requestId) {
         return service.getByRequestId(userId, requestId);
     }
+
     //GET /requests — получить список своих запросов вместе с данными об ответах на них.
     // Для каждого запроса должны указываться описание,
     // дата и время создания и список ответов в формате:
@@ -67,10 +71,8 @@ public class ItemRequestController {
     // начиная с 0, и size — количество элементов для отображения.
     @GetMapping("/all")
     public List<RequestDtoWithItemList> getAllWithParams(@RequestHeader(Constants.X_SHARER_USER_ID) long userId,
-                                                         @RequestParam int from,
-                                                         @RequestParam int size) {
-        return null;
+                                                         @RequestParam(required = false) @Min(0) Integer from,
+                                                         @RequestParam(required = false) @Min(1) Integer size) {
+        return service.getAllWithParams(userId, from, size);
     }
-
-
 }

@@ -2,6 +2,8 @@ package ru.practicum.shareit.item;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.BookingMapper;
 import ru.practicum.shareit.booking.BookingRepository;
@@ -68,8 +70,9 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDtoOutcomeLong> getAllItemsByOwner(long userId) {
-        List<Item> ownerItems = itemRepository.findByOwnerId(userId);
+    public List<ItemDtoOutcomeLong> getAllItemsByOwner(long userId, Integer from, Integer size) {
+        Pageable pageable = PageRequest.of(from / size, size);
+        List<Item> ownerItems = itemRepository.findByOwnerId(userId, pageable).toList();
         List<ItemDtoOutcomeLong> result = new ArrayList<>();
         ownerItems.forEach(item -> result.add(getItemById(item.getId(), item.getOwner().getId())));
         result.sort(Comparator.comparing(ItemDtoOutcomeLong::getId));
@@ -77,12 +80,13 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDtoOutcomeAvailableRequest> findByQuery(String text) {
+    public List<ItemDtoOutcomeAvailableRequest> findByQuery(String text, Integer from, Integer size) {
         if (text.isEmpty()) {
             return List.of();
         } else {
+            Pageable pageable = PageRequest.of(from / size, size);
             return itemRepository
-                    .findAllByNameOrDescriptionContainingIgnoreCaseAndAvailableTrue(text, text)
+                    .findAllByNameOrDescriptionContainingIgnoreCaseAndAvailableTrue(text, text, pageable)
                     .stream()
                     .map(item -> itemMapper.toSend(item))
                     .collect(Collectors.toList());

@@ -2,7 +2,7 @@ package ru.practicum.shareit.booking;
 
 import ru.practicum.shareit.booking.dto.BookingDtoIncome;
 import ru.practicum.shareit.booking.dto.BookingDtoOutcomeLong;
-import ru.practicum.shareit.booking.getter_request.model.GetterRequest;
+import ru.practicum.shareit.booking.booking_getter.BookingGetter;
 
 import java.util.List;
 
@@ -14,5 +14,5 @@ public interface BookingService {
 
     BookingDtoOutcomeLong getBooking(long ownerOrClientId, long bookingId);
 
-    List<BookingDtoOutcomeLong> getAllBookingsById(GetterRequest request);
+    List<BookingDtoOutcomeLong> getAllBookingsById(BookingGetter request);
 }

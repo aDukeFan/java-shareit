@@ -1,6 +1,9 @@
 package ru.practicum.shareit.request;
 
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.ItemMapper;
@@ -62,6 +65,20 @@ public class RequestServiceImpl implements RequestService {
                 .orElseThrow(() -> new NotFoundException("No request with Id " + requestId));
         RequestDtoWithItemList requestDtoWithItemList = requestMapper.toSendAll(request);
         return setItemsDto(requestDtoWithItemList);
+    }
+
+    @Override
+    public List<RequestDtoWithItemList> getAllWithParams(long userId, Integer from, Integer size) {
+        if (from == null || size == null) {
+            return List.of();
+        }
+        userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException(Constants.NO_USER_WITH_SUCH_ID + userId));
+        Pageable pageable = PageRequest.of(from / size, size, Sort.Direction.DESC, "created");
+        return requestRepository.findAll(pageable).stream()
+                .filter(request -> request.getRequester().getId() != userId)
+                .map(request -> requestMapper.toSendAll(request)).map(this::setItemsDto)
+                .collect(Collectors.toList());
     }
 
     private RequestDtoWithItemList setItemsDto(RequestDtoWithItemList requestDtoWithItemList) {

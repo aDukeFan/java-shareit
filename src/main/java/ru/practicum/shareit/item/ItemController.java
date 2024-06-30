@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item;
 
 import lombok.AllArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,11 +19,13 @@ import ru.practicum.shareit.item.dto.ItemDtoOutcomeAvailableRequest;
 import ru.practicum.shareit.util.Constants;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import java.util.List;
 
 @RestController
 @RequestMapping("/items")
 @AllArgsConstructor
+@Validated
 public class ItemController {
 
     private ItemService service;
@@ -47,13 +50,17 @@ public class ItemController {
     }
 
     @GetMapping
-    public List<ItemDtoOutcomeLong> getAllByOwner(@RequestHeader(Constants.X_SHARER_USER_ID) long userId) {
-        return service.getAllItemsByOwner(userId);
+    public List<ItemDtoOutcomeLong> getAllByOwner(@RequestHeader(Constants.X_SHARER_USER_ID) long userId,
+                                                  @RequestParam(required = false, defaultValue = "0") @Min(0) Integer from,
+                                                  @RequestParam(required = false, defaultValue = "100") @Min(1) Integer size) {
+        return service.getAllItemsByOwner(userId, from, size);
     }
 
     @GetMapping("/search")
-    public List<ItemDtoOutcomeAvailableRequest> findByQuery(@RequestParam String text) {
-        return service.findByQuery(text);
+    public List<ItemDtoOutcomeAvailableRequest> findByQuery(@RequestParam String text,
+                                                            @RequestParam(required = false, defaultValue = "0") @Min(0) Integer from,
+                                                            @RequestParam(required = false, defaultValue = "100") @Min(1) Integer size) {
+        return service.findByQuery(text, from, size);
     }
 
     @PostMapping("/{itemId}/comment")

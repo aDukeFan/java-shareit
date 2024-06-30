@@ -19,7 +19,7 @@ class UserServiceImplIntegrationTest {
                 .setName("name")
                 .setEmail("ya@ya.ru");
         UserDto savedUserDto = service.create(userDto);
-        userDto.setId(1);
+        userDto.setId(1L);
         assertEquals(userDto, savedUserDto);
     }
 }

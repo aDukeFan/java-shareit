@@ -107,8 +107,8 @@ public class BookingServiceImpl implements BookingService {
             case OWNER:
                 switch (BookingGetterState.valueOf(getter.getState())) {
                     case ALL:
-                        return bookingRepository
-                                .findAllByItemOwnerIdOrderByStartDesc(userId, pageable).stream()
+                        return bookingRepository.findAllByItemOwnerIdOrderByStartDesc(userId, pageable)
+                                .stream()
                                 .map(booking -> bookingMapper.toSendLong(booking))
                                 .collect(Collectors.toList());
                     case CURRENT:
@@ -121,8 +121,7 @@ public class BookingServiceImpl implements BookingService {
                                 .map(booking -> bookingMapper.toSendLong(booking))
                                 .collect(Collectors.toList());
                     case PAST:
-                        return bookingRepository
-                                .findAllByItemOwnerIdAndEndIsBeforeOrderByStartDesc(userId,
+                        return bookingRepository.findAllByItemOwnerIdAndEndIsBeforeOrderByStartDesc(userId,
                                         LocalDateTime.now(),
                                         pageable)
                                 .stream()
@@ -161,8 +160,8 @@ public class BookingServiceImpl implements BookingService {
             case BOOKER:
                 switch (BookingGetterState.valueOf(getter.getState())) {
                     case ALL:
-                        return bookingRepository
-                                .findAllByBookerIdOrderByStartDesc(userId, pageable).stream()
+                        return bookingRepository.findAllByBookerIdOrderByStartDesc(userId, pageable)
+                                .stream()
                                 .map(booking -> bookingMapper.toSendLong(booking))
                                 .collect(Collectors.toList());
                     case CURRENT:
@@ -175,16 +174,14 @@ public class BookingServiceImpl implements BookingService {
                                 .map(booking -> bookingMapper.toSendLong(booking))
                                 .collect(Collectors.toList());
                     case PAST:
-                        return bookingRepository.
-                                findAllByBookerIdAndEndIsBeforeOrderByStartDesc(userId,
+                        return bookingRepository.findAllByBookerIdAndEndIsBeforeOrderByStartDesc(userId,
                                         LocalDateTime.now(),
                                         pageable)
                                 .stream()
                                 .map(booking -> bookingMapper.toSendLong(booking))
                                 .collect(Collectors.toList());
                     case FUTURE:
-                        return bookingRepository
-                                .findAllByBookerIdAndStartIsAfterOrderByStartDesc(userId,
+                        return bookingRepository.findAllByBookerIdAndStartIsAfterOrderByStartDesc(userId,
                                         LocalDateTime.now(),
                                         pageable)
                                 .stream()
@@ -193,16 +190,14 @@ public class BookingServiceImpl implements BookingService {
                                 .map(booking -> bookingMapper.toSendLong(booking))
                                 .collect(Collectors.toList());
                     case WAITING:
-                        return bookingRepository
-                                .findAllByBookerIdAndStatusIsOrderByStartDesc(userId,
+                        return bookingRepository.findAllByBookerIdAndStatusIsOrderByStartDesc(userId,
                                         BookingStatus.WAITING,
                                         pageable)
                                 .stream()
                                 .map(booking -> bookingMapper.toSendLong(booking))
                                 .collect(Collectors.toList());
                     case REJECTED:
-                        return bookingRepository
-                                .findAllByBookerIdAndStatusIsOrderByStartDesc(userId,
+                        return bookingRepository.findAllByBookerIdAndStatusIsOrderByStartDesc(userId,
                                         BookingStatus.REJECTED,
                                         pageable)
                                 .stream()

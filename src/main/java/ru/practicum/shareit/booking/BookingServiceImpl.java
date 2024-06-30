@@ -5,13 +5,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.booking.booking_getter.BookingGetter;
+import ru.practicum.shareit.booking.booking_getter.BookingGetterState;
 import ru.practicum.shareit.booking.creator_checker.CheckerCreatorChain;
 import ru.practicum.shareit.booking.creator_checker.checker.CreatorChecker;
 import ru.practicum.shareit.booking.creator_checker.model.Creator;
 import ru.practicum.shareit.booking.dto.BookingDtoIncome;
 import ru.practicum.shareit.booking.dto.BookingDtoOutcomeLong;
-import ru.practicum.shareit.booking.booking_getter.BookingGetter;
-import ru.practicum.shareit.booking.booking_getter.BookingGetterState;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.exception.BadRequestException;
@@ -103,7 +103,8 @@ public class BookingServiceImpl implements BookingService {
         Integer size = getter.getSize();
         Pageable pageable = PageRequest.of(from / size, size);
         switch (getter.getType()) {
-            default: return List.of();
+            default:
+                return List.of();
             case OWNER:
                 switch (BookingGetterState.valueOf(getter.getState())) {
                     case ALL:
@@ -155,7 +156,6 @@ public class BookingServiceImpl implements BookingService {
                                 .collect(Collectors.toList());
                     default:
                         return List.of();
-
                 }
             case BOOKER:
                 switch (BookingGetterState.valueOf(getter.getState())) {

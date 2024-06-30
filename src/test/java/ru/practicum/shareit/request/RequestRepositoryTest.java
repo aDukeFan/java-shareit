@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.annotation.DirtiesContext;
 import ru.practicum.shareit.request.model.Request;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.model.User;
@@ -31,6 +32,7 @@ class RequestRepositoryTest {
     }
 
     @Test
+    @DirtiesContext
     public void findAllByRequesterIdTest() {
         User user = userRepository.findById(1L).get();
         List<Request> requestList = requestRepository.findAllByRequesterId(1);

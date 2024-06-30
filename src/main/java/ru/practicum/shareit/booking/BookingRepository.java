@@ -18,11 +18,9 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<Booking> findAllByBookerIdAndItemId(long bookerId, long itemId);
 
     //all
-    Page<Booking> findAllByItemOwnerIdOrderByStartDesc(long ownerId,
-                                                       Pageable pageable);
+    Page<Booking> findAllByItemOwnerIdOrderByStartDesc(long ownerId, Pageable pageable);
 
-    Page<Booking> findAllByBookerIdOrderByStartDesc(long bookerId,
-                                                    Pageable pageable);
+    Page<Booking> findAllByBookerIdOrderByStartDesc(long bookerId, Pageable pageable);
 
     //current
     Page<Booking> findAllByItemOwnerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(long ownerId,
@@ -34,6 +32,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
                                                                                  LocalDateTime first,
                                                                                  LocalDateTime second,
                                                                                  Pageable pageable);
+
     //past
     Page<Booking> findAllByItemOwnerIdAndEndIsBeforeOrderByStartDesc(long ownerId,
                                                                      LocalDateTime first,
@@ -42,6 +41,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     Page<Booking> findAllByBookerIdAndEndIsBeforeOrderByStartDesc(long bookerId,
                                                                   LocalDateTime first,
                                                                   Pageable pageable);
+
     //future
     Page<Booking> findAllByItemOwnerIdAndStartIsAfterOrderByStartDesc(long ownerId,
                                                                       LocalDateTime first,
@@ -59,7 +59,4 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     Page<Booking> findAllByBookerIdAndStatusIsOrderByStartDesc(long bookerId,
                                                                BookingStatus status,
                                                                Pageable pageable);
-
-
-
 }

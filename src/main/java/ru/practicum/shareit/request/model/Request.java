@@ -24,6 +24,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "requests", schema = "public")
 public class Request {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
@@ -34,5 +35,4 @@ public class Request {
     User requester;
     @Column(name = "created")
     LocalDateTime created;
-    
 }

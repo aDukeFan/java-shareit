@@ -12,7 +12,7 @@ import javax.validation.constraints.NotNull;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Accessors(chain = true)
 public class UserDto {
-    long id;
+    Long id;
     String name;
     @Email
     @NotNull

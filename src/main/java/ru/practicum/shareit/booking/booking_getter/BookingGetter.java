@@ -1,4 +1,4 @@
-package ru.practicum.shareit.booking.getter_request.model;
+package ru.practicum.shareit.booking.booking_getter;
 
 import lombok.AccessLevel;
 import lombok.Data;
@@ -12,8 +12,10 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Accessors(chain = true)
 @Data
-public class GetterRequest {
+public class BookingGetter {
     long userId;
-    GetterRequestType type;
+    BookingGetterType type;
     String state;
+    Integer from;
+    Integer size;
 }

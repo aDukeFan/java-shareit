@@ -1,4 +1,4 @@
-package ru.practicum.shareit.booking.creator_request.model;
+package ru.practicum.shareit.booking.creator_checker.model;
 
 import lombok.AccessLevel;
 import lombok.Data;
@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Accessors(chain = true)
 @Data
-public class CreateRequest {
+public class Creator {
 
     long bookerId;
     long ownerId;

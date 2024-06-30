@@ -1,21 +1,19 @@
-package ru.practicum.shareit.request.model;
+package ru.practicum.shareit.request.dto;
 
 import lombok.AccessLevel;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.experimental.FieldDefaults;
-import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
 
-
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Accessors(chain = true)
-@Data
-public class ItemRequest {
+@Getter
+@Setter
+public class RequestDtoOutcome {
     long id;
     String description;
-    User requestor;
     LocalDateTime created;
-
 }

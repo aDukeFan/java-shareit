@@ -13,7 +13,9 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 
     Page<Item> findByOwnerId(long ownerId, Pageable pageable);
 
-    Page<Item> findAllByNameOrDescriptionContainingIgnoreCaseAndAvailableTrue(String name, String description, Pageable pageable);
+    Page<Item> findAllByAvailableTrueAndNameIgnoreCaseContainingOrDescriptionIgnoreCaseContaining(String name,
+                                                                                                  String description,
+                                                                                                  Pageable pageable);
 
     List<Item> findByRequestId(long requestId);
 }

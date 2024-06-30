@@ -86,7 +86,7 @@ public class ItemServiceImpl implements ItemService {
         } else {
             Pageable pageable = PageRequest.of(from / size, size);
             return itemRepository
-                    .findAllByNameOrDescriptionContainingIgnoreCaseAndAvailableTrue(text, text, pageable)
+                    .findAllByAvailableTrueAndNameIgnoreCaseContainingOrDescriptionIgnoreCaseContaining(text, text, pageable)
                     .stream()
                     .map(item -> itemMapper.toSend(item))
                     .collect(Collectors.toList());

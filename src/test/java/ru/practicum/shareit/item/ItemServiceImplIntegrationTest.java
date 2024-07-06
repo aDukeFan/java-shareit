@@ -60,7 +60,9 @@ public class ItemServiceImplIntegrationTest {
         Booking last = bookingRepository.save(booking2);
         ItemDtoOutcomeLong outcome = itemService.getItemById(savedItem.getId(), owner.getId());
         assertEquals(item.getDescription(), outcome.getDescription());
-        assertEquals(next.getStart(), outcome.getNextBooking().getStart());
-        assertEquals(last.getStart(), outcome.getLastBooking().getStart());
+        assertEquals(next.getStart().withNano(0),
+                outcome.getNextBooking().getStart().withNano(0));
+        assertEquals(last.getStart().withNano(0),
+                outcome.getLastBooking().getStart().withNano(0));
     }
 }

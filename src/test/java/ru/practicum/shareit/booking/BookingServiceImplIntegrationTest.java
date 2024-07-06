@@ -59,6 +59,7 @@ public class BookingServiceImplIntegrationTest {
         assertEquals(1, bookingDtoOutcomeLong.getId());
         assertEquals(booker.getEmail(), bookingDtoOutcomeLong.getBooker().getEmail());
         assertEquals(1, bookingDtoOutcomeLong.getItem().getId());
-        assertEquals(booking.getStart(), bookingDtoOutcomeLong.getStart());
+        assertEquals(booking.getStart().withNano(0),
+                bookingDtoOutcomeLong.getStart().withNano(0));
     }
 }

@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -33,6 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -135,8 +137,21 @@ public class ItemServiceImplTest {
     }
 
     @Test
-    public void findByQuery() {
+    public void findByQueryNoTextTest() {
         assertEquals(0, itemService.findByQuery("", 0, 10).size());
+    }
+
+    @Test
+    public void findByQueryWithText() {
+        when(itemRepository
+                .findAllByNameIgnoreCaseContainingOrDescriptionIgnoreCaseContainingAndAvailableTrue(
+                        anyString(),
+                        anyString(), any(Pageable.class))).thenReturn(Page.empty());
+        assertEquals(0, itemService.findByQuery("some text", 0, 10).size());
+        verify(itemRepository)
+                .findAllByNameIgnoreCaseContainingOrDescriptionIgnoreCaseContainingAndAvailableTrue(
+                        anyString(), anyString(),
+                        any(Pageable.class));
     }
 
     @Test

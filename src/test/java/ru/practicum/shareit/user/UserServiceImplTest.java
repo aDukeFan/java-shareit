@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 
@@ -55,6 +56,11 @@ public class UserServiceImplTest {
                 userService.update(1L, userDto).getEmail());
         verify(repository).findById(anyLong());
         verify(repository).save(user);
+    }
+
+    @Test
+    public void getWithBadIdTest() {
+        assertThrows(NotFoundException.class, () -> userService.get(1L));
     }
 
     @Test

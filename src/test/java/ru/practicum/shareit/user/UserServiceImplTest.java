@@ -17,8 +17,10 @@ import static org.mockito.Mockito.verify;
 public class UserServiceImplTest {
 
     private UserService userService;
+
     @Mock
     private UserRepository repository;
+
     @Mock
     private UserMapper userMapper;
 
@@ -26,6 +28,7 @@ public class UserServiceImplTest {
     public void setUp() {
         userService = new UserServiceImpl(repository, userMapper);
     }
+
     @Test
     public void updateWithException() {
         assertThrows(ValidationException.class, () -> userService.update(1, new UserDto()));

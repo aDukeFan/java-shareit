@@ -40,14 +40,19 @@ import static org.mockito.Mockito.when;
 public class ItemServiceImplTest {
 
     private ItemService itemService;
+
     @Mock
     private ItemRepository itemRepository;
+
     @Mock
     private UserRepository userRepository;
+
     @Mock
     private CommentRepository commentRepository;
+
     @Mock
     private RequestRepository requestRepository;
+
     @Mock
     private BookingRepository bookingRepository;
 

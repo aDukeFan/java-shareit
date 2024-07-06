@@ -20,6 +20,7 @@ public class RequestRepositoryTest {
 
     @Autowired
     private RequestRepository requestRepository;
+
     @Autowired
     private UserRepository userRepository;
 

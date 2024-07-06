@@ -24,13 +24,18 @@ import static org.mockito.Mockito.when;
 public class RequestServiceImplTest {
 
     private RequestService requestService;
+
     @Mock
     private RequestRepository requestRepository;
+
     @Mock
     private UserRepository userRepository;
+
     @Mock
     private ItemRepository itemRepository;
+
     private final RequestMapper requestMapper = new RequestMapperImpl();
+
     private final ItemMapper itemMapper = new ItemMapperImpl();
 
     @BeforeEach

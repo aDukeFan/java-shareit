@@ -36,12 +36,16 @@ import static org.mockito.Mockito.when;
 public class BookingServiceImplTest {
 
     private BookingService bookingService;
+
     @Mock
     private UserRepository userRepository;
+
     @Mock
     private ItemRepository itemRepository;
+
     @Mock
     private BookingRepository bookingRepository;
+
     private final BookingMapper bookingMapper = new BookingMapperImpl();
 
     @BeforeEach

@@ -71,4 +71,10 @@ public class UserServiceImplTest {
     public void getAllTest() {
         assertTrue(userService.getAll().isEmpty());
     }
+
+    @Test
+    public void deleteTest() {
+        userService.delete(anyLong());
+        verify(repository).deleteById(anyLong());
+    }
 }

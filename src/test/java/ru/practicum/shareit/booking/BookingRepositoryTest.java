@@ -356,7 +356,7 @@ class BookingRepositoryTest {
 
     @Test
     @DirtiesContext
-    public void findAllByItemOwnerIdAndStartIsAfterOrderByStartDescTest() {
+    public void findAllByItemOwnerIdAndStartIsAfterAndStatusIsOrStatusIsOrderByStartDescTest() {
         User firstUser = new User()
                 .setName("firstUser")
                 .setEmail("ya@ya.ru");
@@ -393,14 +393,14 @@ class BookingRepositoryTest {
         Booking savedBooking2 = bookingRepository.save(secondBooking);
         List<Booking> bookings = List.of(savedBooking2, savedBooking);
         assertEquals(bookings, bookingRepository
-                .findAllByItemOwnerIdAndStartIsAfterOrderByStartDesc(owner.getId(),
-                        LocalDateTime.now(),
+                .findAllByItemOwnerIdAndStartIsAfterAndStatusIsOrStatusIsOrderByStartDesc(owner.getId(),
+                        LocalDateTime.now(), BookingStatus.APPROVED, BookingStatus.WAITING,
                         PageRequest.of(0, 100)).toList());
     }
 
     @Test
     @DirtiesContext
-    public void findAllByBookerIdAndStartIsAfterOrderByStartDescTest() {
+    public void findAllByBookerIdAndStartIsAfterAndStatusIsOrStatusIsOrderByStartDescTest() {
         User firstUser = new User()
                 .setName("firstUser")
                 .setEmail("ya@ya.ru");
@@ -437,8 +437,8 @@ class BookingRepositoryTest {
         Booking savedBooking2 = bookingRepository.save(secondBooking);
         List<Booking> bookings = List.of(savedBooking2, savedBooking);
         assertEquals(bookings, bookingRepository
-                .findAllByBookerIdAndStartIsAfterOrderByStartDesc(booker.getId(),
-                        LocalDateTime.now(),
+                .findAllByBookerIdAndStartIsAfterAndStatusIsOrStatusIsOrderByStartDesc(booker.getId(),
+                        LocalDateTime.now(), BookingStatus.APPROVED, BookingStatus.WAITING,
                         PageRequest.of(0, 100)).toList());
     }
 

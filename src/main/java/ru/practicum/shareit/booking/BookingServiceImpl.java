@@ -2,11 +2,13 @@ package ru.practicum.shareit.booking;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.booking.booking_getter.BookingGetter;
-import ru.practicum.shareit.booking.booking_getter.BookingGetterState;
+import ru.practicum.shareit.booking.booking_getter.model.BookingGetter;
+import ru.practicum.shareit.booking.booking_getter.model.BookingGetterState;
+import ru.practicum.shareit.booking.booking_getter.model.BookingGetterType;
 import ru.practicum.shareit.booking.creator_checker.CheckerCreatorChain;
 import ru.practicum.shareit.booking.creator_checker.checker.CreatorChecker;
 import ru.practicum.shareit.booking.creator_checker.model.Creator;
@@ -102,110 +104,88 @@ public class BookingServiceImpl implements BookingService {
         Integer from = getter.getFrom();
         Integer size = getter.getSize();
         Pageable pageable = PageRequest.of(from / size, size);
-        switch (getter.getType()) {
+        BookingGetterType type = getter.getType();
+        if (type == BookingGetterType.BOOKER) {
+            return findAllByBookerWithState(userId, pageable, getter.getState())
+                    .stream()
+                    .map(booking -> bookingMapper.toSendLong(booking))
+                    .collect(Collectors.toList());
+        } else if (type == BookingGetterType.OWNER) {
+            return findAllByOwnerAndState(userId, pageable, state).stream()
+                    .map(booking -> bookingMapper.toSendLong(booking))
+                    .collect(Collectors.toList());
+        } else {
+            return List.of();
+        }
+    }
+
+    private Page<Booking> findAllByOwnerAndState(long userId, Pageable pageable, String state) {
+        switch (BookingGetterState.valueOf(state)) {
+            case ALL:
+                return bookingRepository.findAllByItemOwnerIdOrderByStartDesc(userId, pageable);
+            case CURRENT:
+                return bookingRepository
+                        .findAllByItemOwnerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(userId,
+                                LocalDateTime.now(),
+                                LocalDateTime.now(),
+                                pageable);
+            case PAST:
+                return bookingRepository.findAllByItemOwnerIdAndEndIsBeforeOrderByStartDesc(userId,
+                        LocalDateTime.now(),
+                        pageable);
+            case FUTURE:
+                return bookingRepository
+                        .findAllByItemOwnerIdAndStartIsAfterAndStatusIsOrStatusIsOrderByStartDesc(userId,
+                                LocalDateTime.now(),
+                                BookingStatus.APPROVED,
+                                BookingStatus.WAITING,
+                                pageable);
+            case WAITING:
+                return bookingRepository
+                        .findAllByItemOwnerIdAndStatusIsOrderByStartDesc(userId,
+                                BookingStatus.WAITING,
+                                pageable);
+            case REJECTED:
+                return bookingRepository
+                        .findAllByItemOwnerIdAndStatusIsOrderByStartDesc(userId,
+                                BookingStatus.REJECTED,
+                                pageable);
             default:
-                return List.of();
-            case OWNER:
-                switch (BookingGetterState.valueOf(getter.getState())) {
-                    case ALL:
-                        return bookingRepository.findAllByItemOwnerIdOrderByStartDesc(userId, pageable)
-                                .stream()
-                                .map(booking -> bookingMapper.toSendLong(booking))
-                                .collect(Collectors.toList());
-                    case CURRENT:
-                        return bookingRepository
-                                .findAllByItemOwnerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(userId,
-                                        LocalDateTime.now(),
-                                        LocalDateTime.now(),
-                                        pageable)
-                                .stream()
-                                .map(booking -> bookingMapper.toSendLong(booking))
-                                .collect(Collectors.toList());
-                    case PAST:
-                        return bookingRepository.findAllByItemOwnerIdAndEndIsBeforeOrderByStartDesc(userId,
-                                        LocalDateTime.now(),
-                                        pageable)
-                                .stream()
-                                .map(booking -> bookingMapper.toSendLong(booking))
-                                .collect(Collectors.toList());
-                    case FUTURE:
-                        return bookingRepository
-                                .findAllByItemOwnerIdAndStartIsAfterOrderByStartDesc(userId,
-                                        LocalDateTime.now(),
-                                        pageable)
-                                .stream()
-                                .filter(booking -> booking.getStatus() == BookingStatus.APPROVED
-                                        || booking.getStatus() == BookingStatus.WAITING)
-                                .map(booking -> bookingMapper.toSendLong(booking))
-                                .collect(Collectors.toList());
-                    case WAITING:
-                        return bookingRepository
-                                .findAllByItemOwnerIdAndStatusIsOrderByStartDesc(userId,
-                                        BookingStatus.WAITING,
-                                        pageable)
-                                .stream()
-                                .map(booking -> bookingMapper.toSendLong(booking))
-                                .collect(Collectors.toList());
-                    case REJECTED:
-                        return bookingRepository
-                                .findAllByItemOwnerIdAndStatusIsOrderByStartDesc(userId,
-                                        BookingStatus.REJECTED,
-                                        pageable)
-                                .stream()
-                                .map(booking -> bookingMapper.toSendLong(booking))
-                                .collect(Collectors.toList());
-                    default:
-                        return List.of();
-                }
-            case BOOKER:
-                switch (BookingGetterState.valueOf(getter.getState())) {
-                    case ALL:
-                        return bookingRepository.findAllByBookerIdOrderByStartDesc(userId, pageable)
-                                .stream()
-                                .map(booking -> bookingMapper.toSendLong(booking))
-                                .collect(Collectors.toList());
-                    case CURRENT:
-                        return bookingRepository
-                                .findAllByBookerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(userId,
-                                        LocalDateTime.now(),
-                                        LocalDateTime.now(),
-                                        pageable)
-                                .stream()
-                                .map(booking -> bookingMapper.toSendLong(booking))
-                                .collect(Collectors.toList());
-                    case PAST:
-                        return bookingRepository.findAllByBookerIdAndEndIsBeforeOrderByStartDesc(userId,
-                                        LocalDateTime.now(),
-                                        pageable)
-                                .stream()
-                                .map(booking -> bookingMapper.toSendLong(booking))
-                                .collect(Collectors.toList());
-                    case FUTURE:
-                        return bookingRepository.findAllByBookerIdAndStartIsAfterOrderByStartDesc(userId,
-                                        LocalDateTime.now(),
-                                        pageable)
-                                .stream()
-                                .filter(booking -> booking.getStatus() == BookingStatus.APPROVED
-                                        || booking.getStatus() == BookingStatus.WAITING)
-                                .map(booking -> bookingMapper.toSendLong(booking))
-                                .collect(Collectors.toList());
-                    case WAITING:
-                        return bookingRepository.findAllByBookerIdAndStatusIsOrderByStartDesc(userId,
-                                        BookingStatus.WAITING,
-                                        pageable)
-                                .stream()
-                                .map(booking -> bookingMapper.toSendLong(booking))
-                                .collect(Collectors.toList());
-                    case REJECTED:
-                        return bookingRepository.findAllByBookerIdAndStatusIsOrderByStartDesc(userId,
-                                        BookingStatus.REJECTED,
-                                        pageable)
-                                .stream()
-                                .map(booking -> bookingMapper.toSendLong(booking))
-                                .collect(Collectors.toList());
-                    default:
-                        return List.of();
-                }
+                return Page.empty();
+        }
+    }
+
+    private Page<Booking> findAllByBookerWithState(long userId, Pageable pageable, String state) {
+        switch (BookingGetterState.valueOf(state)) {
+            case ALL:
+                return bookingRepository.findAllByBookerIdOrderByStartDesc(userId, pageable);
+            case CURRENT:
+                return bookingRepository
+                        .findAllByBookerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(userId,
+                                LocalDateTime.now(),
+                                LocalDateTime.now(),
+                                pageable);
+            case PAST:
+                return bookingRepository.findAllByBookerIdAndEndIsBeforeOrderByStartDesc(userId,
+                        LocalDateTime.now(),
+                        pageable);
+            case FUTURE:
+                return bookingRepository
+                        .findAllByBookerIdAndStartIsAfterAndStatusIsOrStatusIsOrderByStartDesc(userId,
+                                LocalDateTime.now(),
+                                BookingStatus.APPROVED,
+                                BookingStatus.WAITING,
+                                pageable);
+            case WAITING:
+                return bookingRepository.findAllByBookerIdAndStatusIsOrderByStartDesc(userId,
+                        BookingStatus.WAITING,
+                        pageable);
+            case REJECTED:
+                return bookingRepository.findAllByBookerIdAndStatusIsOrderByStartDesc(userId,
+                        BookingStatus.REJECTED,
+                        pageable);
+            default:
+                return Page.empty();
         }
     }
 }

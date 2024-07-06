@@ -60,7 +60,7 @@ class ItemRepositoryTest {
                 .setDescription("About life, Tolstoy");
         itemRepository.save(item);
         assertEquals(1, itemRepository
-                .findAllByAvailableTrueAndNameIgnoreCaseContainingOrDescriptionIgnoreCaseContaining(
+                .findAllByNameIgnoreCaseContainingOrDescriptionIgnoreCaseContainingAndAvailableTrue(
                 "war",
                 "fire",
                 PageRequest.of(0, 100)).toList().size());

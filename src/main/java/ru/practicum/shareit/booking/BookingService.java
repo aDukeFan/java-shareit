@@ -2,7 +2,7 @@ package ru.practicum.shareit.booking;
 
 import ru.practicum.shareit.booking.dto.BookingDtoIncome;
 import ru.practicum.shareit.booking.dto.BookingDtoOutcomeLong;
-import ru.practicum.shareit.booking.booking_getter.BookingGetter;
+import ru.practicum.shareit.booking.booking_getter.model.BookingGetter;
 
 import java.util.List;
 

@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.shareit.booking.dto.BookingDtoIncome;
 import ru.practicum.shareit.booking.dto.BookingDtoOutcomeLong;
-import ru.practicum.shareit.booking.booking_getter.BookingGetter;
-import ru.practicum.shareit.booking.booking_getter.BookingGetterType;
+import ru.practicum.shareit.booking.booking_getter.model.BookingGetter;
+import ru.practicum.shareit.booking.booking_getter.model.BookingGetterType;
 import ru.practicum.shareit.util.Constants;
 
 import javax.validation.Valid;

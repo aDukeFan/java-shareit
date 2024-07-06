@@ -14,6 +14,7 @@ import javax.validation.constraints.NotNull;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Accessors(chain = true)
 public class ItemDtoIncome {
+
     @NotBlank
     @NotNull
     String name;
@@ -22,8 +23,5 @@ public class ItemDtoIncome {
     String description;
     @NotNull
     Boolean available;
-    //Добавьте поле requestId в тело запроса POST /items.
-    // Обратите внимание, что должна сохраниться возможность
-    // добавить вещь и без указания requestId.
     Long requestId;
 }

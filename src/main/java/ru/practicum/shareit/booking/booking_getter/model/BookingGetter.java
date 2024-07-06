@@ -1,4 +1,4 @@
-package ru.practicum.shareit.booking.booking_getter;
+package ru.practicum.shareit.booking.booking_getter.model;
 
 import lombok.AccessLevel;
 import lombok.Data;

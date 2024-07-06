@@ -27,6 +27,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -38,16 +39,19 @@ public class ItemServiceImpl implements ItemService {
     private UserRepository userRepository;
     private CommentRepository commentRepository;
     private RequestRepository requestRepository;
-    private CommentMapper commentMapper;
     private BookingRepository bookingRepository;
+    private CommentMapper commentMapper;
     private ItemMapper itemMapper;
     private BookingMapper bookingMapper;
 
 
     @Override
     public ItemDtoOutcomeAvailableRequest create(long userId, ItemDtoIncome itemDtoIncome) {
-        User owner = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException(Constants.MESSAGE_BAD_OWNER_ID + userId));
+        Optional<User> optionalUser = userRepository.findById(userId);
+        if (optionalUser.isEmpty()) {
+            throw new NotFoundException(Constants.MESSAGE_BAD_OWNER_ID + userId);
+        }
+        User owner = optionalUser.get();
         Long requestId = itemDtoIncome.getRequestId();
         if (requestId != null) {
             requestRepository.findById(requestId)
@@ -60,12 +64,14 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDtoOutcomeAvailableRequest update(long id, long userId, ItemDtoIncome itemDto) {
-        Item itemToUpdate = itemRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(Constants.NO_ITEM_WITH_SUCH_ID + id));
-        if (itemToUpdate.getOwner().getId() != userId) {
+        Optional<Item> optionalItem = itemRepository.findById(id);
+        if (optionalItem.isEmpty()) {
+            throw new NotFoundException(Constants.NO_ITEM_WITH_SUCH_ID + id);
+        }
+        if (optionalItem.get().getOwner().getId() != userId) {
             throw new NotFoundException(Constants.MESSAGE_BAD_OWNER_ID + userId);
         }
-        Item itemToSave = itemMapper.updateItemFromDto(itemDto, itemToUpdate).setId(id);
+        Item itemToSave = itemMapper.updateItemFromDto(itemDto, optionalItem.get()).setId(id);
         return itemMapper.toSend(itemRepository.save(itemToSave));
     }
 
@@ -86,7 +92,7 @@ public class ItemServiceImpl implements ItemService {
         } else {
             Pageable pageable = PageRequest.of(from / size, size);
             return itemRepository
-                    .findAllByAvailableTrueAndNameIgnoreCaseContainingOrDescriptionIgnoreCaseContaining(text, text, pageable)
+                    .findAllByNameIgnoreCaseContainingOrDescriptionIgnoreCaseContainingAndAvailableTrue(text, text, pageable)
                     .stream()
                     .map(item -> itemMapper.toSend(item))
                     .collect(Collectors.toList());
@@ -95,8 +101,11 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDtoOutcomeLong getItemById(long itemId, long userId) {
-        Item item = itemRepository.findById(itemId)
-                .orElseThrow(() -> new NotFoundException(Constants.NO_ITEM_WITH_SUCH_ID + itemId));
+        Optional<Item> optionalItem = itemRepository.findById(itemId);
+        if (optionalItem.isEmpty()) {
+            throw new NotFoundException(Constants.NO_ITEM_WITH_SUCH_ID + itemId);
+        }
+        Item item = optionalItem.get();
         ItemDtoOutcomeLong itemDtoOutcomeLong = itemMapper.toGetById(item);
         List<CommentDtoOutcome> comments = commentRepository.findAllByItemId(itemId).stream()
                 .map(comment -> commentMapper.toSend(comment))
@@ -124,18 +133,26 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public CommentDtoOutcome addComment(long userId, long itemId, CommentDtoIncome commentDtoIncome) {
         List<Booking> bookings = bookingRepository
-                .findAllByBookerIdAndItemId(userId, itemId).stream()
-                .filter(booking -> booking.getStart().isBefore(LocalDateTime.now()))
-                .filter(booking -> booking.getStatus() == BookingStatus.APPROVED
-                        || booking.getStatus() == BookingStatus.CANCELED)
-                .collect(Collectors.toList());
+                .findAllByBookerIdAndItemIdAndStartIsBeforeAndStatusIsOrStatusIs(userId, itemId,
+                        LocalDateTime.now().withNano(0),
+                        BookingStatus.APPROVED,
+                        BookingStatus.CANCELED);
+
         if (bookings.isEmpty()) {
             throw new BadRequestException("No bookings");
         }
-        Item itemToComment = itemRepository.findById(itemId)
-                .orElseThrow(() -> new NotFoundException(Constants.NO_ITEM_WITH_SUCH_ID + itemId));
-        User booker = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException(Constants.MESSAGE_BAD_OWNER_ID + userId));
+
+        Optional<Item> optionalItem = itemRepository.findById(itemId);
+        if (optionalItem.isEmpty()) {
+            throw new NotFoundException(Constants.NO_ITEM_WITH_SUCH_ID + itemId);
+        }
+        Item itemToComment = optionalItem.get();
+
+        Optional<User> optionalUser = userRepository.findById(userId);
+        if (optionalUser.isEmpty()) {
+            throw new NotFoundException(Constants.MESSAGE_BAD_OWNER_ID + userId);
+        }
+        User booker = optionalUser.get();
 
         Comment comment = commentMapper.toSave(commentDtoIncome)
                 .setAuthor(booker)

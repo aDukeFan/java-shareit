@@ -17,6 +17,13 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     List<Booking> findAllByBookerIdAndItemId(long bookerId, long itemId);
 
+    //for add comment available
+    List<Booking> findAllByBookerIdAndItemIdAndStartIsBeforeAndStatusIsOrStatusIs(long bookerId,
+                                                                                  long itemId,
+                                                                                  LocalDateTime now,
+                                                                                  BookingStatus first,
+                                                                                  BookingStatus second);
+
     //all
     Page<Booking> findAllByItemOwnerIdOrderByStartDesc(long ownerId, Pageable pageable);
 
@@ -43,13 +50,17 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
                                                                   Pageable pageable);
 
     //future
-    Page<Booking> findAllByItemOwnerIdAndStartIsAfterOrderByStartDesc(long ownerId,
-                                                                      LocalDateTime first,
-                                                                      Pageable pageable);
+    Page<Booking> findAllByItemOwnerIdAndStartIsAfterAndStatusIsOrStatusIsOrderByStartDesc(long ownerId,
+                                                                                           LocalDateTime first,
+                                                                                           BookingStatus status,
+                                                                                           BookingStatus statusNext,
+                                                                                           Pageable pageable);
 
-    Page<Booking> findAllByBookerIdAndStartIsAfterOrderByStartDesc(long bookerId,
-                                                                   LocalDateTime first,
-                                                                   Pageable pageable);
+    Page<Booking> findAllByBookerIdAndStartIsAfterAndStatusIsOrStatusIsOrderByStartDesc(long bookerId,
+                                                                                        LocalDateTime first,
+                                                                                        BookingStatus status,
+                                                                                        BookingStatus statusNext,
+                                                                                        Pageable pageable);
 
     //waiting // rejected
     Page<Booking> findAllByItemOwnerIdAndStatusIsOrderByStartDesc(long ownerId,

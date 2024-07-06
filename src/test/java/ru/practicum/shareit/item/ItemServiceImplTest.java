@@ -37,7 +37,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class ItemServiceImplTest {
+public class ItemServiceImplTest {
 
     private ItemService itemService;
     @Mock
@@ -102,14 +102,14 @@ class ItemServiceImplTest {
     }
 
     @Test
-    void updateTestWithException() {
+    public void updateTestWithException() {
         assertThrows(NotFoundException.class,
                 () -> itemService.update(1L, 1L, new ItemDtoIncome()));
         verify(itemRepository).findById(anyLong());
     }
 
     @Test
-    void getAllItemsByOwner() {
+    public void getAllItemsByOwner() {
         User user = new User()
                 .setId(1L)
                 .setEmail("ya@ya.ru")
@@ -130,23 +130,23 @@ class ItemServiceImplTest {
     }
 
     @Test
-    void findByQuery() {
+    public void findByQuery() {
         assertEquals(0, itemService.findByQuery("", 0, 10).size());
     }
 
     @Test
-    void getItemByIdWithException() {
+    public void getItemByIdWithException() {
         assertThrows(NotFoundException.class, () -> itemService.getItemById(1L, 1L));
     }
 
     @Test
-    void addCommentWithNoBookings() {
+    public void addCommentWithNoBookings() {
         CommentDtoIncome income = new CommentDtoIncome().setText("text");
         assertThrows(BadRequestException.class, () -> itemService.addComment(1L, 1L, income));
     }
 
     @Test
-    void addComment() {
+    public void addComment() {
         CommentDtoIncome income = new CommentDtoIncome()
                 .setText("text");
         when(bookingRepository.findAllByBookerIdAndItemIdAndStartIsBeforeAndStatusIsOrStatusIs(1L, 2L,

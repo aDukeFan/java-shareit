@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
-class RequestServiceImplIntegrationTest {
+public class RequestServiceImplIntegrationTest {
 
     @Autowired
     private RequestService service;
@@ -22,7 +22,7 @@ class RequestServiceImplIntegrationTest {
 
     @Test
     @DirtiesContext
-    void getAllWithParamsTest() {
+    public void getAllWithParamsTest() {
         User user = new User().setName("name").setEmail("ya@ya.ru");
         User user2 = new User().setName("name2").setEmail("ya2@ya.ru");
         userRepository.save(user);

@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DataJpaTest
-class RequestRepositoryTest {
+public class RequestRepositoryTest {
 
     @Autowired
     private RequestRepository requestRepository;

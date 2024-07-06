@@ -14,7 +14,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-class UserServiceImplTest {
+public class UserServiceImplTest {
 
     private UserService userService;
     @Mock
@@ -27,7 +27,7 @@ class UserServiceImplTest {
         userService = new UserServiceImpl(repository, userMapper);
     }
     @Test
-    void updateWithException() {
+    public void updateWithException() {
         assertThrows(ValidationException.class, () -> userService.update(1, new UserDto()));
         verify(repository).findById(anyLong());
     }

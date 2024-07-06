@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-class BookingServiceImplIntegrationTest {
+public class BookingServiceImplIntegrationTest {
 
     @Autowired
     private BookingService bookingService;

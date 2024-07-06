@@ -1,6 +1,7 @@
 package ru.practicum.shareit.request.dto;
 
 import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -15,6 +16,7 @@ import java.util.List;
 @Accessors(chain = true)
 @Getter
 @Setter
+@EqualsAndHashCode
 public class RequestDtoWithItemList {
     long id;
     String description;

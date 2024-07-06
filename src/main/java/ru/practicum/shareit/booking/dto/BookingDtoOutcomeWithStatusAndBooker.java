@@ -1,6 +1,7 @@
 package ru.practicum.shareit.booking.dto;
 
 import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -14,6 +15,7 @@ import java.time.LocalDateTime;
 @Accessors(chain = true)
 @Setter
 @Getter
+@EqualsAndHashCode
 public class BookingDtoOutcomeWithStatusAndBooker {
 
     long id;

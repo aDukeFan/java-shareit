@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
-class ItemServiceImplIntegrationTest {
+public class ItemServiceImplIntegrationTest {
 
     @Autowired
     private ItemService itemService;
@@ -33,7 +33,7 @@ class ItemServiceImplIntegrationTest {
 
     @Test
     @DirtiesContext
-    void getItemById() {
+    public void getItemById() {
         User user1 = new User().setName("user").setEmail("ya@ya.ru");
         User user2 = new User().setName("user2").setEmail("ya2@ya.ru");
         User owner = userRepository.save(user1);

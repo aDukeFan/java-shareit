@@ -27,6 +27,7 @@ import ru.practicum.shareit.util.Constants;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -95,8 +96,10 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public List<BookingDtoOutcomeLong> getAllBookingsById(BookingGetter getter) {
         long userId = getter.getUserId();
-        userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException(Constants.NO_USER_WITH_SUCH_ID + userId));
+        Optional<User> optionalUser = userRepository.findById(userId);
+        if (optionalUser.isEmpty()) {
+                throw new NotFoundException(Constants.NO_USER_WITH_SUCH_ID + userId);
+        }
         String state = getter.getState();
         if (!Arrays.toString(BookingGetterState.values()).contains(state)) {
             throw new BadRequestException("Unknown state: UNSUPPORTED_STATUS");
@@ -111,7 +114,7 @@ public class BookingServiceImpl implements BookingService {
                     .map(booking -> bookingMapper.toSendLong(booking))
                     .collect(Collectors.toList());
         } else if (type == BookingGetterType.OWNER) {
-            return findAllByOwnerAndState(userId, pageable, state).stream()
+            return findAllByOwnerWithState(userId, pageable, state).stream()
                     .map(booking -> bookingMapper.toSendLong(booking))
                     .collect(Collectors.toList());
         } else {
@@ -119,7 +122,7 @@ public class BookingServiceImpl implements BookingService {
         }
     }
 
-    private Page<Booking> findAllByOwnerAndState(long userId, Pageable pageable, String state) {
+    private Page<Booking> findAllByOwnerWithState(long userId, Pageable pageable, String state) {
         switch (BookingGetterState.valueOf(state)) {
             case ALL:
                 return bookingRepository.findAllByItemOwnerIdOrderByStartDesc(userId, pageable);

@@ -8,13 +8,13 @@ import ru.practicum.shareit.user.dto.UserDto;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
-class UserServiceImplIntegrationTest {
+public class UserServiceImplIntegrationTest {
 
     @Autowired
     private UserService service;
 
     @Test
-    void createTest() {
+    public void createTest() {
         UserDto userDto = new UserDto()
                 .setName("name")
                 .setEmail("ya@ya.ru");

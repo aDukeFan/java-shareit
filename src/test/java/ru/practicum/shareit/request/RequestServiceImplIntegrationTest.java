@@ -23,10 +23,10 @@ public class RequestServiceImplIntegrationTest {
     @Test
     @DirtiesContext
     public void getAllWithParamsTest() {
-        User user = new User().setName("name").setEmail("ya@ya.ru");
-        User user2 = new User().setName("name2").setEmail("ya2@ya.ru");
-        userRepository.save(user);
-        userRepository.save(user2);
+        User firstUser = new User().setName("First").setEmail("ya@ya.ru");
+        User secondUser = new User().setName("Second").setEmail("ya2@ya.ru");
+        userRepository.save(firstUser);
+        userRepository.save(secondUser);
         RequestDtoIncome request = new RequestDtoIncome()
                 .setDescription("I need a book");
         service.create(1, request);

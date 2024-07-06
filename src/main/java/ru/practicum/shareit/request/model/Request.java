@@ -1,6 +1,7 @@
 package ru.practicum.shareit.request.model;
 
 import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -19,6 +20,7 @@ import java.time.LocalDateTime;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Accessors(chain = true)
+@EqualsAndHashCode
 @Getter
 @Setter
 @Entity

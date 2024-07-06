@@ -183,6 +183,42 @@ public class BookingServiceImplTest {
     }
 
     @Test
+    public void approveBookingTest() {
+        User booker = new User()
+                .setId(1L)
+                .setName("booker")
+                .setEmail("ya@ya.ru");
+        User owner = new User()
+                .setId(2L)
+                .setName("owner")
+                .setEmail("ya2@ya.ru");
+        Item item = new Item()
+                .setId(1L)
+                .setOwner(owner)
+                .setName("Item")
+                .setDescription("Desc")
+                .setAvailable(true);
+        Booking booking = new Booking()
+                .setId(1L)
+                .setItem(item)
+                .setBooker(booker)
+                .setStart(LocalDateTime.now().withNano(0))
+                .setEnd(LocalDateTime.now().withNano(0).plusDays(1))
+                .setStatus(BookingStatus.WAITING);
+        Booking approvedBooking = new Booking()
+                .setId(1L)
+                .setItem(item)
+                .setBooker(booker)
+                .setStart(LocalDateTime.now().withNano(0))
+                .setEnd(LocalDateTime.now().withNano(0).plusDays(1))
+                .setStatus(BookingStatus.APPROVED);
+        when(bookingRepository.findById(1L)).thenReturn(Optional.of(booking));
+        when(bookingRepository.save(approvedBooking)).thenReturn(approvedBooking);
+        assertEquals(BookingStatus.APPROVED,
+                bookingService.approveBooking(2L, 1L, true).getStatus());
+    }
+
+    @Test
     public void getAllBookingsByIdWithWrongState() {
         BookingGetter getter = new BookingGetter()
                 .setFrom(1)

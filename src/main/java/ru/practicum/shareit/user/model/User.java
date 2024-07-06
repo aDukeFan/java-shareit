@@ -1,6 +1,7 @@
 package ru.practicum.shareit.user.model;
 
 import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -16,6 +17,7 @@ import javax.persistence.Table;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Accessors(chain = true)
+@EqualsAndHashCode
 @Getter
 @Setter
 @ToString

@@ -19,6 +19,7 @@ import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.dto.CommentDtoIncome;
 import ru.practicum.shareit.item.dto.CommentDtoOutcome;
 import ru.practicum.shareit.item.dto.ItemDtoIncome;
+import ru.practicum.shareit.item.dto.ItemDtoOutcomeAvailableRequest;
 import ru.practicum.shareit.item.dto.ItemDtoOutcomeLong;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
@@ -127,10 +128,47 @@ public class ItemServiceImplTest {
     }
 
     @Test
-    public void updateTestWithException() {
+    public void updateTestWithNotFoundException() {
         assertThrows(NotFoundException.class,
                 () -> itemService.update(1L, 1L, new ItemDtoIncome()));
         verify(itemRepository).findById(anyLong());
+    }
+
+    @Test
+    public void updateTestWithBadOwner() {
+        Item item = new Item()
+                .setAvailable(true)
+                .setDescription("some")
+                .setId(1L)
+                .setOwner(new User().setId(3))
+                .setRequestId(1L);
+        when(itemRepository.findById(1L)).thenReturn(Optional.of(item));
+        assertThrows(NotFoundException.class,
+                () -> itemService.update(1L, 1L, new ItemDtoIncome()));
+        verify(itemRepository).findById(anyLong());
+    }
+
+    @Test
+    public void updateTest() {
+        Item item = new Item()
+                .setAvailable(true)
+                .setName("name")
+                .setDescription("some")
+                .setId(1L)
+                .setOwner(new User().setId(1L))
+                .setRequestId(1L);
+        ItemDtoIncome income = new ItemDtoIncome()
+                .setAvailable(true)
+                .setDescription("some")
+                .setName("name")
+                .setRequestId(1L);
+        when(itemRepository.findById(1L)).thenReturn(Optional.of(item));
+        when(itemRepository.save(item)).thenReturn(item);
+        ItemDtoOutcomeAvailableRequest outcome = itemService
+                .update(1L, 1L, income);
+        assertEquals(income.getName(), outcome.getName());
+        verify(itemRepository).findById(anyLong());
+        verify(itemRepository).save(item);
     }
 
     @Test
@@ -214,4 +252,29 @@ public class ItemServiceImplTest {
                 BookingStatus.CANCELED);
     }
 
+    @Test
+    public void addCommendExceptionNoBookingsTest() {
+        long userId = 1L;
+        long itemId = 1L;
+        CommentDtoIncome income = new CommentDtoIncome()
+                .setText("text");
+        assertThrows(BadRequestException.class,
+                () -> itemService.addComment(userId, itemId, income));
+    }
+
+    @Test
+    public void addCommendExceptionBadOwnerTest() {
+        long userId = 1L;
+        long itemId = 1L;
+        when(bookingRepository.findAllByBookerIdAndItemIdAndStartIsBeforeAndStatusIsOrStatusIs(userId, itemId,
+                LocalDateTime.now().withNano(0),
+                BookingStatus.APPROVED,
+                BookingStatus.CANCELED)).thenReturn(List.of(new Booking()));
+        when(itemRepository.findById(anyLong()))
+                .thenReturn(Optional.of(new Item()));
+        CommentDtoIncome income = new CommentDtoIncome()
+                .setText("text");
+        assertThrows(NotFoundException.class,
+                () -> itemService.addComment(userId, itemId, income));
+    }
 }

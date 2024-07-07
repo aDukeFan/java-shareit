@@ -19,6 +19,7 @@ import ru.practicum.shareit.item.dto.ItemDtoOutcomeAvailableRequest;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.request.RequestRepository;
+import ru.practicum.shareit.request.model.Request;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.util.Constants;
@@ -54,8 +55,10 @@ public class ItemServiceImpl implements ItemService {
         User owner = optionalUser.get();
         Long requestId = itemDtoIncome.getRequestId();
         if (requestId != null) {
-            requestRepository.findById(requestId)
-                    .orElseThrow(() -> new NotFoundException("No request with ID " + requestId));
+            Optional<Request> requestOptional = requestRepository.findById(requestId);
+            if (requestOptional.isEmpty()) {
+                throw new NotFoundException("No request with ID " + requestId);
+            }
         }
         Item item = itemMapper.toSave(itemDtoIncome)
                 .setOwner(owner);

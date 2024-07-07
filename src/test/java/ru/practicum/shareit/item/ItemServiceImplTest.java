@@ -109,6 +109,24 @@ public class ItemServiceImplTest {
     }
 
     @Test
+    public void createBadRequestIdTest() {
+        ItemDtoIncome itemDtoIncome = new ItemDtoIncome()
+                .setName("ItemName")
+                .setDescription("ItemDesc")
+                .setAvailable(true)
+                .setRequestId(1L);
+        User user = new User()
+                .setId(1L)
+                .setEmail("ya@ya.ru")
+                .setName("User Name");
+        when(userRepository.findById(1L))
+                .thenReturn(Optional.of(user));
+        when(requestRepository.findById(1L)).thenReturn(Optional.empty());
+        assertThrows(NotFoundException.class,
+                () -> itemService.create(1, itemDtoIncome));
+    }
+
+    @Test
     public void updateTestWithException() {
         assertThrows(NotFoundException.class,
                 () -> itemService.update(1L, 1L, new ItemDtoIncome()));

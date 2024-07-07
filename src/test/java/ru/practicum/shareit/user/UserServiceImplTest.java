@@ -41,6 +41,17 @@ public class UserServiceImplTest {
     }
 
     @Test
+    public void updateWithoutDto() {
+        User user = new User()
+                .setId(1L)
+                .setName("Name")
+                .setEmail("ya@ya.ru");
+        when(repository.findById(user.getId())).thenReturn(Optional.of(user));
+        assertThrows(NullPointerException.class,
+                () -> userService.update(1L, null));
+    }
+
+    @Test
     public void updateTest() {
         User user = new User()
                 .setId(1L)

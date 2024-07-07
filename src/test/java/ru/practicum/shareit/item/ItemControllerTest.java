@@ -68,14 +68,8 @@ class ItemControllerTest {
     void getItemByIdTest() {
         long userId = 1L;
         long itemId = 1L;
-        ItemDtoIncome income = new ItemDtoIncome()
-                .setName("Item")
-                .setDescription("for users")
-                .setAvailable(true);
-        mvc.perform(MockMvcRequestBuilders.patch("/items/{id}", itemId)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .header(Constants.X_SHARER_USER_ID, userId)
-                        .content(mapper.writeValueAsString(income)))
+        mvc.perform(MockMvcRequestBuilders.get("/items/{id}", itemId)
+                        .header(Constants.X_SHARER_USER_ID, userId))
                 .andExpect(status().isOk());
         verify(itemService).getItemById(itemId, userId);
     }

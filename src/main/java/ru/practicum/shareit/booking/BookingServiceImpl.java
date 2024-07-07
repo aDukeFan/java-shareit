@@ -129,17 +129,17 @@ public class BookingServiceImpl implements BookingService {
             case CURRENT:
                 return bookingRepository
                         .findAllByItemOwnerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(userId,
-                                LocalDateTime.now(),
-                                LocalDateTime.now(),
+                                LocalDateTime.now().withNano(0),
+                                LocalDateTime.now().withNano(0),
                                 pageable);
             case PAST:
                 return bookingRepository.findAllByItemOwnerIdAndEndIsBeforeOrderByStartDesc(userId,
-                        LocalDateTime.now(),
+                        LocalDateTime.now().withNano(0),
                         pageable);
             case FUTURE:
                 return bookingRepository
                         .findAllByItemOwnerIdAndStartIsAfterAndStatusIsOrStatusIsOrderByStartDesc(userId,
-                                LocalDateTime.now(),
+                                LocalDateTime.now().withNano(0),
                                 BookingStatus.APPROVED,
                                 BookingStatus.WAITING,
                                 pageable);
@@ -165,17 +165,17 @@ public class BookingServiceImpl implements BookingService {
             case CURRENT:
                 return bookingRepository
                         .findAllByBookerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(userId,
-                                LocalDateTime.now(),
-                                LocalDateTime.now(),
+                                LocalDateTime.now().withNano(0),
+                                LocalDateTime.now().withNano(0),
                                 pageable);
             case PAST:
                 return bookingRepository.findAllByBookerIdAndEndIsBeforeOrderByStartDesc(userId,
-                        LocalDateTime.now(),
+                        LocalDateTime.now().withNano(0),
                         pageable);
             case FUTURE:
                 return bookingRepository
                         .findAllByBookerIdAndStartIsAfterAndStatusIsOrStatusIsOrderByStartDesc(userId,
-                                LocalDateTime.now(),
+                                LocalDateTime.now().withNano(0),
                                 BookingStatus.APPROVED,
                                 BookingStatus.WAITING,
                                 pageable);

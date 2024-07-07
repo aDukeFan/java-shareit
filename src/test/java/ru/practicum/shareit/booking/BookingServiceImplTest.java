@@ -6,9 +6,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import ru.practicum.shareit.booking.booking_getter.model.BookingGetter;
 import ru.practicum.shareit.booking.booking_getter.model.BookingGetterType;
 import ru.practicum.shareit.booking.dto.BookingDtoIncome;
@@ -28,9 +30,12 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static ru.practicum.shareit.booking.booking_getter.model.BookingGetterType.BOOKER;
+import static ru.practicum.shareit.booking.booking_getter.model.BookingGetterType.OWNER;
 
 @ExtendWith(MockitoExtension.class)
 public class BookingServiceImplTest {
@@ -141,14 +146,14 @@ public class BookingServiceImplTest {
                 .setStatus(BookingStatus.WAITING);
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(booker));
         when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item));
-        when(bookingRepository.save(ArgumentMatchers.any(Booking.class))).thenReturn(booking);
+        when(bookingRepository.save(any(Booking.class))).thenReturn(booking);
         BookingDtoOutcomeLong outcome = bookingService.createBooking(1L, income);
         BookingDtoOutcomeLong expected = bookingMapper.toSendLong(booking);
         assertEquals(expected, outcome);
 
         verify(userRepository).findById(anyLong());
         verify(itemRepository).findById(anyLong());
-        verify(bookingRepository).save(ArgumentMatchers.any(Booking.class));
+        verify(bookingRepository).save(any(Booking.class));
     }
 
     @Test
@@ -229,4 +234,328 @@ public class BookingServiceImplTest {
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(new User()));
         assertThrows(BadRequestException.class, () -> bookingService.getAllBookingsById(getter));
     }
+
+    @Test
+    public void getAllBookingsByIdByOwnerAll() {
+        BookingGetter getter = new BookingGetter()
+                .setFrom(1)
+                .setSize(1)
+                .setType(OWNER)
+                .setState("ALL")
+                .setUserId(1L);
+        Pageable pageable = PageRequest.of(1, 1);
+        User user = new User()
+                .setId(1L)
+                .setName("Name")
+                .setEmail("ya@ya.ru");
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(bookingRepository
+                .findAllByItemOwnerIdOrderByStartDesc(1L, pageable))
+                .thenReturn(Page.empty());
+        bookingService.getAllBookingsById(getter);
+        verify(bookingRepository).findAllByItemOwnerIdOrderByStartDesc(1, pageable);
+    }
+
+    @Test
+    public void getAllBookingsByIdByOwnerCurrent() {
+        BookingGetter getter = new BookingGetter()
+                .setFrom(1)
+                .setSize(1)
+                .setType(OWNER)
+                .setState("CURRENT")
+                .setUserId(1L);
+        Pageable pageable = PageRequest.of(1, 1);
+        User user = new User()
+                .setId(1L)
+                .setName("Name")
+                .setEmail("ya@ya.ru");
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(bookingRepository
+                .findAllByItemOwnerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(
+                        1L,
+                        LocalDateTime.now().withNano(0),
+                        LocalDateTime.now().withNano(0),
+                        pageable))
+                .thenReturn(Page.empty());
+        bookingService.getAllBookingsById(getter);
+        verify(bookingRepository)
+                .findAllByItemOwnerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(
+                        1L,
+                        LocalDateTime.now().withNano(0),
+                        LocalDateTime.now().withNano(0),
+                        pageable);
+    }
+
+    @Test
+    public void getAllBookingsByIdByOwnerPast() {
+        BookingGetter getter = new BookingGetter()
+                .setFrom(1)
+                .setSize(1)
+                .setType(OWNER)
+                .setState("PAST")
+                .setUserId(1L);
+        Pageable pageable = PageRequest.of(1, 1);
+        User user = new User()
+                .setId(1L)
+                .setName("Name")
+                .setEmail("ya@ya.ru");
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(bookingRepository
+                .findAllByItemOwnerIdAndEndIsBeforeOrderByStartDesc(
+                        1L,
+                        LocalDateTime.now().withNano(0),
+                        pageable))
+                .thenReturn(Page.empty());
+        bookingService.getAllBookingsById(getter);
+        verify(bookingRepository)
+                .findAllByItemOwnerIdAndEndIsBeforeOrderByStartDesc(
+                        1L,
+                        LocalDateTime.now().withNano(0),
+                        pageable);
+    }
+
+    @Test
+    public void getAllBookingsByIdByOwnerFuture() {
+        BookingGetter getter = new BookingGetter()
+                .setFrom(1)
+                .setSize(1)
+                .setType(OWNER)
+                .setState("FUTURE")
+                .setUserId(1L);
+        Pageable pageable = PageRequest.of(1, 1);
+        User user = new User()
+                .setId(1L)
+                .setName("Name")
+                .setEmail("ya@ya.ru");
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(bookingRepository
+                .findAllByItemOwnerIdAndStartIsAfterAndStatusIsOrStatusIsOrderByStartDesc(
+                        1L,
+                        LocalDateTime.now().withNano(0),
+                        BookingStatus.APPROVED,
+                        BookingStatus.WAITING,
+                        pageable))
+                .thenReturn(Page.empty());
+        bookingService.getAllBookingsById(getter);
+        verify(bookingRepository)
+                .findAllByItemOwnerIdAndStartIsAfterAndStatusIsOrStatusIsOrderByStartDesc(
+                        1L,
+                        LocalDateTime.now().withNano(0),
+                        BookingStatus.APPROVED,
+                        BookingStatus.WAITING,
+                        pageable);
+    }
+
+    @Test
+    public void getAllBookingsByIdByOwnerWaiting() {
+        BookingGetter getter = new BookingGetter()
+                .setFrom(1)
+                .setSize(1)
+                .setType(OWNER)
+                .setState("WAITING")
+                .setUserId(1L);
+        Pageable pageable = PageRequest.of(1, 1);
+        User user = new User()
+                .setId(1L)
+                .setName("Name")
+                .setEmail("ya@ya.ru");
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(bookingRepository
+                .findAllByItemOwnerIdAndStatusIsOrderByStartDesc(1L,
+                        BookingStatus.WAITING,
+                        pageable))
+                .thenReturn(Page.empty());
+        bookingService.getAllBookingsById(getter);
+        verify(bookingRepository)
+                .findAllByItemOwnerIdAndStatusIsOrderByStartDesc(1L,
+                        BookingStatus.WAITING,
+                        pageable);
+    }
+
+    @Test
+    public void getAllBookingsByIdByOwnerRejected() {
+        BookingGetter getter = new BookingGetter()
+                .setFrom(1)
+                .setSize(1)
+                .setType(OWNER)
+                .setState("REJECTED")
+                .setUserId(1L);
+        Pageable pageable = PageRequest.of(1, 1);
+        User user = new User()
+                .setId(1L)
+                .setName("Name")
+                .setEmail("ya@ya.ru");
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(bookingRepository
+                .findAllByItemOwnerIdAndStatusIsOrderByStartDesc(1L,
+                        BookingStatus.REJECTED,
+                        pageable))
+                .thenReturn(Page.empty());
+        bookingService.getAllBookingsById(getter);
+        verify(bookingRepository)
+                .findAllByItemOwnerIdAndStatusIsOrderByStartDesc(1L,
+                        BookingStatus.REJECTED,
+                        pageable);
+    }
+
+    @Test
+    public void getAllBookingsByIdByBookerAll() {
+        BookingGetter getter = new BookingGetter()
+                .setFrom(1)
+                .setSize(1)
+                .setType(BOOKER)
+                .setState("ALL")
+                .setUserId(1L);
+        Pageable pageable = PageRequest.of(1, 1);
+        User user = new User()
+                .setId(1L)
+                .setName("Name")
+                .setEmail("ya@ya.ru");
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(bookingRepository
+                .findAllByBookerIdOrderByStartDesc(1L, pageable))
+                .thenReturn(Page.empty());
+        bookingService.getAllBookingsById(getter);
+        verify(bookingRepository).findAllByBookerIdOrderByStartDesc(1L, pageable);
+    }
+
+    @Test
+    public void getAllBookingsByIdByBookerCurrent() {
+        BookingGetter getter = new BookingGetter()
+                .setFrom(1)
+                .setSize(1)
+                .setType(BOOKER)
+                .setState("CURRENT")
+                .setUserId(1L);
+        Pageable pageable = PageRequest.of(1, 1);
+        User user = new User()
+                .setId(1L)
+                .setName("Name")
+                .setEmail("ya@ya.ru");
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(bookingRepository
+                .findAllByBookerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(1L,
+                        LocalDateTime.now().withNano(0),
+                        LocalDateTime.now().withNano(0),
+                        pageable))
+                .thenReturn(Page.empty());
+        bookingService.getAllBookingsById(getter);
+        verify(bookingRepository)
+                .findAllByBookerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(1L,
+                        LocalDateTime.now().withNano(0),
+                        LocalDateTime.now().withNano(0),
+                        pageable);
+    }
+
+    @Test
+    public void getAllBookingsByIdByBookerPast() {
+        BookingGetter getter = new BookingGetter()
+                .setFrom(1)
+                .setSize(1)
+                .setType(BOOKER)
+                .setState("PAST")
+                .setUserId(1L);
+        Pageable pageable = PageRequest.of(1, 1);
+        User user = new User()
+                .setId(1L)
+                .setName("Name")
+                .setEmail("ya@ya.ru");
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+
+        when(bookingRepository
+                .findAllByBookerIdAndEndIsBeforeOrderByStartDesc(1L,
+                        LocalDateTime.now().withNano(0),
+                        pageable))
+                .thenReturn(Page.empty());
+        bookingService.getAllBookingsById(getter);
+        verify(bookingRepository)
+                .findAllByBookerIdAndEndIsBeforeOrderByStartDesc(1L,
+                        LocalDateTime.now().withNano(0),
+                        pageable);
+    }
+
+    @Test
+    public void getAllBookingsByIdByBookerFuture() {
+        BookingGetter getter = new BookingGetter()
+                .setFrom(1)
+                .setSize(1)
+                .setType(BOOKER)
+                .setState("FUTURE")
+                .setUserId(1L);
+        Pageable pageable = PageRequest.of(1, 1);
+        User user = new User()
+                .setId(1L)
+                .setName("Name")
+                .setEmail("ya@ya.ru");
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(bookingRepository
+                .findAllByBookerIdAndStartIsAfterAndStatusIsOrStatusIsOrderByStartDesc(1L,
+                        LocalDateTime.now().withNano(0),
+                        BookingStatus.APPROVED,
+                        BookingStatus.WAITING,
+                        pageable))
+                .thenReturn(Page.empty());
+        bookingService.getAllBookingsById(getter);
+        verify(bookingRepository)
+                .findAllByBookerIdAndStartIsAfterAndStatusIsOrStatusIsOrderByStartDesc(1L,
+                        LocalDateTime.now().withNano(0),
+                        BookingStatus.APPROVED,
+                        BookingStatus.WAITING,
+                        pageable);
+    }
+
+    @Test
+    public void getAllBookingsByIdByBookerWaiting() {
+        BookingGetter getter = new BookingGetter()
+                .setFrom(1)
+                .setSize(1)
+                .setType(BOOKER)
+                .setState("WAITING")
+                .setUserId(1L);
+        Pageable pageable = PageRequest.of(1, 1);
+        User user = new User()
+                .setId(1L)
+                .setName("Name")
+                .setEmail("ya@ya.ru");
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+
+        when(bookingRepository
+                .findAllByBookerIdAndStatusIsOrderByStartDesc(1L,
+                        BookingStatus.WAITING,
+                        pageable))
+                .thenReturn(Page.empty());
+        bookingService.getAllBookingsById(getter);
+        verify(bookingRepository)
+                .findAllByBookerIdAndStatusIsOrderByStartDesc(1L,
+                        BookingStatus.WAITING,
+                        pageable);
+    }
+
+    @Test
+    public void getAllBookingsByIdByBookerRejected() {
+        BookingGetter getter = new BookingGetter()
+                .setFrom(1)
+                .setSize(1)
+                .setType(BOOKER)
+                .setState("REJECTED")
+                .setUserId(1L);
+        Pageable pageable = PageRequest.of(1, 1);
+        User user = new User()
+                .setId(1L)
+                .setName("Name")
+                .setEmail("ya@ya.ru");
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(bookingRepository
+                .findAllByBookerIdAndStatusIsOrderByStartDesc(1L,
+                        BookingStatus.REJECTED,
+                        pageable))
+                .thenReturn(Page.empty());
+        bookingService.getAllBookingsById(getter);
+        verify(bookingRepository)
+                .findAllByBookerIdAndStatusIsOrderByStartDesc(1L,
+                        BookingStatus.REJECTED,
+                        pageable);
+    }
 }
+
+

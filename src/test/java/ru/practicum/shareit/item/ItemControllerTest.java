@@ -1,32 +1,23 @@
 package ru.practicum.shareit.item;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import ru.practicum.shareit.item.dto.CommentDtoIncome;
 import ru.practicum.shareit.item.dto.ItemDtoIncome;
-import ru.practicum.shareit.item.dto.ItemDtoOutcomeAvailableRequest;
-import ru.practicum.shareit.user.UserController;
-import ru.practicum.shareit.user.UserService;
-import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.util.Constants;
 
-import java.nio.charset.StandardCharsets;
-
-import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = ItemController.class)
 class ItemControllerTest {
-
 
     @Autowired
     private ObjectMapper mapper;
@@ -37,54 +28,99 @@ class ItemControllerTest {
     @Autowired
     private MockMvc mvc;
 
+    @SneakyThrows
     @Test
-    void create() throws Exception {
+    void createTest() {
+        long userId = 1L;
         ItemDtoIncome income = new ItemDtoIncome()
                 .setName("Item")
                 .setDescription("for users")
                 .setAvailable(true);
-        ItemDtoOutcomeAvailableRequest outcome = new ItemDtoOutcomeAvailableRequest()
-                .setName("Item")
-                .setAvailable(true)
-                .setDescription("for users")
-                .setId(1);
-        when(itemService.create(1, income))
-                .thenAnswer(invocationOnMock -> invocationOnMock
-                        .getArgument(0, ItemDtoOutcomeAvailableRequest.class)
-                        .setId(1)
-                        .setName(income.getName())
-                        .setAvailable(income.getAvailable())
-                        .setDescription(income.getDescription()));
 
         mvc.perform(MockMvcRequestBuilders.post("/items")
-                        .content(mapper.writeValueAsString(outcome))
-                        .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is(1L), Long.class))
-                .andExpect(jsonPath("$.name", is(outcome.getName())))
-                .andExpect(jsonPath("$.description", is(outcome.getDescription())))
-                .andExpect(jsonPath("$.available", is(outcome.getAvailable())));
+                        .header(Constants.X_SHARER_USER_ID, userId)
+                        .content(mapper.writeValueAsString(income)))
+                .andExpect(status().isOk());
+
+        verify(itemService).create(userId, income);
     }
 
+    @SneakyThrows
     @Test
-    void update() {
+    void updateTest() {
+        long userId = 1L;
+        long itemId = 1L;
+        ItemDtoIncome income = new ItemDtoIncome()
+                .setName("Item")
+                .setDescription("for users")
+                .setAvailable(true);
+        mvc.perform(MockMvcRequestBuilders.patch("/items/{id}", itemId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header(Constants.X_SHARER_USER_ID, userId)
+                        .content(mapper.writeValueAsString(income)))
+                .andExpect(status().isOk());
+        verify(itemService).update(itemId, userId, income);
     }
 
+    @SneakyThrows
     @Test
-    void getItemById() {
+    void getItemByIdTest() {
+        long userId = 1L;
+        long itemId = 1L;
+        ItemDtoIncome income = new ItemDtoIncome()
+                .setName("Item")
+                .setDescription("for users")
+                .setAvailable(true);
+        mvc.perform(MockMvcRequestBuilders.patch("/items/{id}", itemId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header(Constants.X_SHARER_USER_ID, userId)
+                        .content(mapper.writeValueAsString(income)))
+                .andExpect(status().isOk());
+        verify(itemService).getItemById(itemId, userId);
     }
 
+    @SneakyThrows
     @Test
-    void getAllByOwner() {
+    void getAllByOwnerTest() {
+        long userId = 1L;
+        Integer from = 1;
+        Integer size = 1;
+        mvc.perform(MockMvcRequestBuilders.get("/items")
+                        .param("from", String.valueOf(from))
+                        .param("size", String.valueOf(size))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header(Constants.X_SHARER_USER_ID, userId))
+                .andExpect(status().isOk());
+        verify(itemService).getAllItemsByOwner(userId, from, size);
     }
 
+    @SneakyThrows
     @Test
-    void findByQuery() {
+    void findByQueryTest() {
+        String text = "some text";
+        Integer from = 1;
+        Integer size = 1;
+        mvc.perform(MockMvcRequestBuilders.get("/items/search")
+                        .param("text", text)
+                        .param("from", String.valueOf(from))
+                        .param("size", String.valueOf(size))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+        verify(itemService).findByQuery(text, from, size);
     }
 
+    @SneakyThrows
     @Test
-    void addComment() {
+    void addCommentTest() {
+        long userId = 1L;
+        long itemId = 1L;
+        CommentDtoIncome income = new CommentDtoIncome().setText("good comment");
+        mvc.perform(MockMvcRequestBuilders.post("/items/{itemId}/comment", itemId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(income))
+                        .header(Constants.X_SHARER_USER_ID, userId))
+                .andExpect(status().isOk());
+        verify(itemService).addComment(userId, itemId, income);
     }
 }

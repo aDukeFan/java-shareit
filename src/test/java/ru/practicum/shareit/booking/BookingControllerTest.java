@@ -7,12 +7,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.booking.dto.BookingDtoIncome;
-import ru.practicum.shareit.user.UserController;
-import ru.practicum.shareit.user.UserService;
 
 import java.time.LocalDateTime;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @WebMvcTest(controllers = BookingController.class)
 class BookingControllerTest {

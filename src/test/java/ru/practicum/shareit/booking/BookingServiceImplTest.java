@@ -225,29 +225,16 @@ public class BookingServiceImplTest {
 
     @Test
     public void getAllBookingsByIdWithWrongState() {
-        BookingGetter getter = new BookingGetter()
-                .setFrom(1)
-                .setSize(1)
-                .setType(BookingGetterType.BOOKER)
-                .setState("Wrong State")
-                .setUserId(1L);
+        BookingGetter getter = makeGetter(BOOKER, "Wrong state");
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(new User()));
         assertThrows(BadRequestException.class, () -> bookingService.getAllBookingsById(getter));
     }
 
     @Test
     public void getAllBookingsByIdByOwnerAll() {
-        BookingGetter getter = new BookingGetter()
-                .setFrom(1)
-                .setSize(1)
-                .setType(OWNER)
-                .setState("ALL")
-                .setUserId(1L);
-        Pageable pageable = PageRequest.of(1, 1);
-        User user = new User()
-                .setId(1L)
-                .setName("Name")
-                .setEmail("ya@ya.ru");
+        BookingGetter getter = makeGetter(OWNER, "ALL");
+        Pageable pageable = makePageable();
+        User user = makeUser();
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(bookingRepository
                 .findAllByItemOwnerIdOrderByStartDesc(1L, pageable))
@@ -258,17 +245,9 @@ public class BookingServiceImplTest {
 
     @Test
     public void getAllBookingsByIdByOwnerCurrent() {
-        BookingGetter getter = new BookingGetter()
-                .setFrom(1)
-                .setSize(1)
-                .setType(OWNER)
-                .setState("CURRENT")
-                .setUserId(1L);
-        Pageable pageable = PageRequest.of(1, 1);
-        User user = new User()
-                .setId(1L)
-                .setName("Name")
-                .setEmail("ya@ya.ru");
+        BookingGetter getter = makeGetter(OWNER, "CURRENT");
+        Pageable pageable = makePageable();
+        User user = makeUser();
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(bookingRepository
                 .findAllByItemOwnerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(
@@ -288,17 +267,9 @@ public class BookingServiceImplTest {
 
     @Test
     public void getAllBookingsByIdByOwnerPast() {
-        BookingGetter getter = new BookingGetter()
-                .setFrom(1)
-                .setSize(1)
-                .setType(OWNER)
-                .setState("PAST")
-                .setUserId(1L);
-        Pageable pageable = PageRequest.of(1, 1);
-        User user = new User()
-                .setId(1L)
-                .setName("Name")
-                .setEmail("ya@ya.ru");
+        BookingGetter getter = makeGetter(OWNER, "PAST");
+        Pageable pageable = makePageable();
+        User user = makeUser();
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(bookingRepository
                 .findAllByItemOwnerIdAndEndIsBeforeOrderByStartDesc(
@@ -316,17 +287,9 @@ public class BookingServiceImplTest {
 
     @Test
     public void getAllBookingsByIdByOwnerFuture() {
-        BookingGetter getter = new BookingGetter()
-                .setFrom(1)
-                .setSize(1)
-                .setType(OWNER)
-                .setState("FUTURE")
-                .setUserId(1L);
-        Pageable pageable = PageRequest.of(1, 1);
-        User user = new User()
-                .setId(1L)
-                .setName("Name")
-                .setEmail("ya@ya.ru");
+        BookingGetter getter = makeGetter(OWNER, "FUTURE");
+        Pageable pageable = makePageable();
+        User user = makeUser();
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(bookingRepository
                 .findAllByItemOwnerIdAndStartIsAfterAndStatusIsOrStatusIsOrderByStartDesc(
@@ -348,17 +311,9 @@ public class BookingServiceImplTest {
 
     @Test
     public void getAllBookingsByIdByOwnerWaiting() {
-        BookingGetter getter = new BookingGetter()
-                .setFrom(1)
-                .setSize(1)
-                .setType(OWNER)
-                .setState("WAITING")
-                .setUserId(1L);
-        Pageable pageable = PageRequest.of(1, 1);
-        User user = new User()
-                .setId(1L)
-                .setName("Name")
-                .setEmail("ya@ya.ru");
+        BookingGetter getter = makeGetter(OWNER,"WAITING");
+        Pageable pageable = makePageable();
+        User user = makeUser();
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(bookingRepository
                 .findAllByItemOwnerIdAndStatusIsOrderByStartDesc(1L,
@@ -374,17 +329,9 @@ public class BookingServiceImplTest {
 
     @Test
     public void getAllBookingsByIdByOwnerRejected() {
-        BookingGetter getter = new BookingGetter()
-                .setFrom(1)
-                .setSize(1)
-                .setType(OWNER)
-                .setState("REJECTED")
-                .setUserId(1L);
-        Pageable pageable = PageRequest.of(1, 1);
-        User user = new User()
-                .setId(1L)
-                .setName("Name")
-                .setEmail("ya@ya.ru");
+        BookingGetter getter = makeGetter(OWNER, "REJECTED");
+        Pageable pageable = makePageable();
+        User user = makeUser();
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(bookingRepository
                 .findAllByItemOwnerIdAndStatusIsOrderByStartDesc(1L,
@@ -400,17 +347,9 @@ public class BookingServiceImplTest {
 
     @Test
     public void getAllBookingsByIdByBookerAll() {
-        BookingGetter getter = new BookingGetter()
-                .setFrom(1)
-                .setSize(1)
-                .setType(BOOKER)
-                .setState("ALL")
-                .setUserId(1L);
-        Pageable pageable = PageRequest.of(1, 1);
-        User user = new User()
-                .setId(1L)
-                .setName("Name")
-                .setEmail("ya@ya.ru");
+        BookingGetter getter = makeGetter(BOOKER, "ALL");
+        Pageable pageable = makePageable();
+        User user = makeUser();
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(bookingRepository
                 .findAllByBookerIdOrderByStartDesc(1L, pageable))
@@ -421,17 +360,9 @@ public class BookingServiceImplTest {
 
     @Test
     public void getAllBookingsByIdByBookerCurrent() {
-        BookingGetter getter = new BookingGetter()
-                .setFrom(1)
-                .setSize(1)
-                .setType(BOOKER)
-                .setState("CURRENT")
-                .setUserId(1L);
-        Pageable pageable = PageRequest.of(1, 1);
-        User user = new User()
-                .setId(1L)
-                .setName("Name")
-                .setEmail("ya@ya.ru");
+        BookingGetter getter = makeGetter(BOOKER, "CURRENT");
+        Pageable pageable = makePageable();
+        User user = makeUser();
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(bookingRepository
                 .findAllByBookerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(1L,
@@ -449,17 +380,9 @@ public class BookingServiceImplTest {
 
     @Test
     public void getAllBookingsByIdByBookerPast() {
-        BookingGetter getter = new BookingGetter()
-                .setFrom(1)
-                .setSize(1)
-                .setType(BOOKER)
-                .setState("PAST")
-                .setUserId(1L);
-        Pageable pageable = PageRequest.of(1, 1);
-        User user = new User()
-                .setId(1L)
-                .setName("Name")
-                .setEmail("ya@ya.ru");
+        BookingGetter getter = makeGetter(BOOKER, "PAST");
+        Pageable pageable = makePageable();
+        User user = makeUser();
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
 
         when(bookingRepository
@@ -476,17 +399,9 @@ public class BookingServiceImplTest {
 
     @Test
     public void getAllBookingsByIdByBookerFuture() {
-        BookingGetter getter = new BookingGetter()
-                .setFrom(1)
-                .setSize(1)
-                .setType(BOOKER)
-                .setState("FUTURE")
-                .setUserId(1L);
-        Pageable pageable = PageRequest.of(1, 1);
-        User user = new User()
-                .setId(1L)
-                .setName("Name")
-                .setEmail("ya@ya.ru");
+        BookingGetter getter = makeGetter(BOOKER, "FUTURE");
+        Pageable pageable = makePageable();
+        User user = makeUser();
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(bookingRepository
                 .findAllByBookerIdAndStartIsAfterAndStatusIsOrStatusIsOrderByStartDesc(1L,
@@ -506,17 +421,9 @@ public class BookingServiceImplTest {
 
     @Test
     public void getAllBookingsByIdByBookerWaiting() {
-        BookingGetter getter = new BookingGetter()
-                .setFrom(1)
-                .setSize(1)
-                .setType(BOOKER)
-                .setState("WAITING")
-                .setUserId(1L);
-        Pageable pageable = PageRequest.of(1, 1);
-        User user = new User()
-                .setId(1L)
-                .setName("Name")
-                .setEmail("ya@ya.ru");
+        BookingGetter getter = makeGetter(BOOKER, "WAITING");
+        Pageable pageable = makePageable();
+        User user = makeUser();
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
 
         when(bookingRepository
@@ -533,17 +440,9 @@ public class BookingServiceImplTest {
 
     @Test
     public void getAllBookingsByIdByBookerRejected() {
-        BookingGetter getter = new BookingGetter()
-                .setFrom(1)
-                .setSize(1)
-                .setType(BOOKER)
-                .setState("REJECTED")
-                .setUserId(1L);
-        Pageable pageable = PageRequest.of(1, 1);
-        User user = new User()
-                .setId(1L)
-                .setName("Name")
-                .setEmail("ya@ya.ru");
+        BookingGetter getter = makeGetter(BOOKER, "REJECTED");
+        Pageable pageable = makePageable();
+        User user = makeUser();
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(bookingRepository
                 .findAllByBookerIdAndStatusIsOrderByStartDesc(1L,
@@ -556,6 +455,25 @@ public class BookingServiceImplTest {
                         BookingStatus.REJECTED,
                         pageable);
     }
+
+    private BookingGetter makeGetter(BookingGetterType type, String state) {
+        return new BookingGetter()
+                .setFrom(1)
+                .setSize(1)
+                .setType(type)
+                .setState(state)
+                .setUserId(1L);
+    }
+     private User makeUser() {
+        return new User()
+                .setId(1L)
+                .setName("Name")
+                .setEmail("ya@ya.ru");
+     }
+
+     private Pageable makePageable() {
+        return PageRequest.of(1, 1);
+     }
 }
 
 

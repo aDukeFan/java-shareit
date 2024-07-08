@@ -89,7 +89,11 @@ public class BookingServiceImplTest {
                 .setAvailable(available);
     }
 
-    private Booking makeBooking(Item item, User booker, LocalDateTime start, LocalDateTime end, BookingStatus status) {
+    private Booking makeBooking(Item item,
+                                User booker,
+                                LocalDateTime start,
+                                LocalDateTime end,
+                                BookingStatus status) {
         return new Booking()
                 .setId(1L)
                 .setItem(item)

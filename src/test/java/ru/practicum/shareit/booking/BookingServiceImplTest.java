@@ -464,6 +464,7 @@ public class BookingServiceImplTest {
                 .setState(state)
                 .setUserId(1L);
     }
+
      private User makeUser() {
         return new User()
                 .setId(1L)

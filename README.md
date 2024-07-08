@@ -7,6 +7,7 @@
 
 ### last changes
 * add requests
+* add comments
 * add bookings 
 * add users
 * add items

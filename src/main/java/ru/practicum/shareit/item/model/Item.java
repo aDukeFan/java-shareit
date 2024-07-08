@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item.model;
 
 import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -18,6 +19,7 @@ import javax.persistence.Table;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Accessors(chain = true)
+@EqualsAndHashCode
 @Getter
 @Setter
 @Entity
@@ -35,6 +37,6 @@ public class Item {
     @ManyToOne
     @JoinColumn(name = "owner_id")
     User owner;
-    @Column(name = "request")
-    String request;
+    @Column(name = "request_id")
+    Long requestId;
 }

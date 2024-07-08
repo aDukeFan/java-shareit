@@ -1,6 +1,5 @@
 package ru.practicum.shareit.booking;
 
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -25,49 +24,49 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
                                                                                   BookingStatus second);
 
     //all
-    Page<Booking> findAllByItemOwnerIdOrderByStartDesc(long ownerId, Pageable pageable);
+    List<Booking> findAllByItemOwnerIdOrderByStartDesc(long ownerId, Pageable pageable);
 
-    Page<Booking> findAllByBookerIdOrderByStartDesc(long bookerId, Pageable pageable);
+    List<Booking> findAllByBookerIdOrderByStartDesc(long bookerId, Pageable pageable);
 
     //current
-    Page<Booking> findAllByItemOwnerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(long ownerId,
+    List<Booking> findAllByItemOwnerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(long ownerId,
                                                                                     LocalDateTime first,
                                                                                     LocalDateTime second,
                                                                                     Pageable pageable);
 
-    Page<Booking> findAllByBookerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(long bookerId,
+    List<Booking> findAllByBookerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(long bookerId,
                                                                                  LocalDateTime first,
                                                                                  LocalDateTime second,
                                                                                  Pageable pageable);
 
     //past
-    Page<Booking> findAllByItemOwnerIdAndEndIsBeforeOrderByStartDesc(long ownerId,
+    List<Booking> findAllByItemOwnerIdAndEndIsBeforeOrderByStartDesc(long ownerId,
                                                                      LocalDateTime first,
                                                                      Pageable pageable);
 
-    Page<Booking> findAllByBookerIdAndEndIsBeforeOrderByStartDesc(long bookerId,
+    List<Booking> findAllByBookerIdAndEndIsBeforeOrderByStartDesc(long bookerId,
                                                                   LocalDateTime first,
                                                                   Pageable pageable);
 
     //future
-    Page<Booking> findAllByItemOwnerIdAndStartIsAfterAndStatusIsOrStatusIsOrderByStartDesc(long ownerId,
+    List<Booking> findAllByItemOwnerIdAndStartIsAfterAndStatusIsOrStatusIsOrderByStartDesc(long ownerId,
                                                                                            LocalDateTime first,
                                                                                            BookingStatus status,
                                                                                            BookingStatus statusNext,
                                                                                            Pageable pageable);
 
-    Page<Booking> findAllByBookerIdAndStartIsAfterAndStatusIsOrStatusIsOrderByStartDesc(long bookerId,
+    List<Booking> findAllByBookerIdAndStartIsAfterAndStatusIsOrStatusIsOrderByStartDesc(long bookerId,
                                                                                         LocalDateTime first,
                                                                                         BookingStatus status,
                                                                                         BookingStatus statusNext,
                                                                                         Pageable pageable);
 
     //waiting // rejected
-    Page<Booking> findAllByItemOwnerIdAndStatusIsOrderByStartDesc(long ownerId,
+    List<Booking> findAllByItemOwnerIdAndStatusIsOrderByStartDesc(long ownerId,
                                                                   BookingStatus status,
                                                                   Pageable pageable);
 
-    Page<Booking> findAllByBookerIdAndStatusIsOrderByStartDesc(long bookerId,
+    List<Booking> findAllByBookerIdAndStatusIsOrderByStartDesc(long bookerId,
                                                                BookingStatus status,
                                                                Pageable pageable);
 }

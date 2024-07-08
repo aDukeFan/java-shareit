@@ -2,7 +2,6 @@ package ru.practicum.shareit.booking;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -98,7 +97,7 @@ public class BookingServiceImpl implements BookingService {
         long userId = getter.getUserId();
         Optional<User> optionalUser = userRepository.findById(userId);
         if (optionalUser.isEmpty()) {
-                throw new NotFoundException(Constants.NO_USER_WITH_SUCH_ID + userId);
+            throw new NotFoundException(Constants.NO_USER_WITH_SUCH_ID + userId);
         }
         String state = getter.getState();
         if (!Arrays.toString(BookingGetterState.values()).contains(state)) {
@@ -122,7 +121,7 @@ public class BookingServiceImpl implements BookingService {
         }
     }
 
-    private Page<Booking> findAllByOwnerWithState(long userId, Pageable pageable, String state) {
+    private List<Booking> findAllByOwnerWithState(long userId, Pageable pageable, String state) {
         switch (BookingGetterState.valueOf(state)) {
             case ALL:
                 return bookingRepository.findAllByItemOwnerIdOrderByStartDesc(userId, pageable);
@@ -154,11 +153,11 @@ public class BookingServiceImpl implements BookingService {
                                 BookingStatus.REJECTED,
                                 pageable);
             default:
-                return Page.empty();
+                return List.of();
         }
     }
 
-    private Page<Booking> findAllByBookerWithState(long userId, Pageable pageable, String state) {
+    private List<Booking> findAllByBookerWithState(long userId, Pageable pageable, String state) {
         switch (BookingGetterState.valueOf(state)) {
             case ALL:
                 return bookingRepository.findAllByBookerIdOrderByStartDesc(userId, pageable);
@@ -188,7 +187,7 @@ public class BookingServiceImpl implements BookingService {
                         BookingStatus.REJECTED,
                         pageable);
             default:
-                return Page.empty();
+                return List.of();
         }
     }
 }

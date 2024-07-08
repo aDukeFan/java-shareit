@@ -8,7 +8,6 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import ru.practicum.shareit.booking.booking_getter.model.BookingGetter;
@@ -25,6 +24,7 @@ import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -251,7 +251,7 @@ public class BookingServiceImplTest {
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(bookingRepository
                 .findAllByItemOwnerIdOrderByStartDesc(1L, pageable))
-                .thenReturn(Page.empty());
+                .thenReturn(List.of());
         bookingService.getAllBookingsById(getter);
         verify(bookingRepository).findAllByItemOwnerIdOrderByStartDesc(1, pageable);
     }
@@ -276,7 +276,7 @@ public class BookingServiceImplTest {
                         LocalDateTime.now().withNano(0),
                         LocalDateTime.now().withNano(0),
                         pageable))
-                .thenReturn(Page.empty());
+                .thenReturn(List.of());
         bookingService.getAllBookingsById(getter);
         verify(bookingRepository)
                 .findAllByItemOwnerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(
@@ -305,7 +305,7 @@ public class BookingServiceImplTest {
                         1L,
                         LocalDateTime.now().withNano(0),
                         pageable))
-                .thenReturn(Page.empty());
+                .thenReturn(List.of());
         bookingService.getAllBookingsById(getter);
         verify(bookingRepository)
                 .findAllByItemOwnerIdAndEndIsBeforeOrderByStartDesc(
@@ -335,7 +335,7 @@ public class BookingServiceImplTest {
                         BookingStatus.APPROVED,
                         BookingStatus.WAITING,
                         pageable))
-                .thenReturn(Page.empty());
+                .thenReturn(List.of());
         bookingService.getAllBookingsById(getter);
         verify(bookingRepository)
                 .findAllByItemOwnerIdAndStartIsAfterAndStatusIsOrStatusIsOrderByStartDesc(
@@ -364,7 +364,7 @@ public class BookingServiceImplTest {
                 .findAllByItemOwnerIdAndStatusIsOrderByStartDesc(1L,
                         BookingStatus.WAITING,
                         pageable))
-                .thenReturn(Page.empty());
+                .thenReturn(List.of());
         bookingService.getAllBookingsById(getter);
         verify(bookingRepository)
                 .findAllByItemOwnerIdAndStatusIsOrderByStartDesc(1L,
@@ -390,7 +390,7 @@ public class BookingServiceImplTest {
                 .findAllByItemOwnerIdAndStatusIsOrderByStartDesc(1L,
                         BookingStatus.REJECTED,
                         pageable))
-                .thenReturn(Page.empty());
+                .thenReturn(List.of());
         bookingService.getAllBookingsById(getter);
         verify(bookingRepository)
                 .findAllByItemOwnerIdAndStatusIsOrderByStartDesc(1L,
@@ -414,7 +414,7 @@ public class BookingServiceImplTest {
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(bookingRepository
                 .findAllByBookerIdOrderByStartDesc(1L, pageable))
-                .thenReturn(Page.empty());
+                .thenReturn(List.of());
         bookingService.getAllBookingsById(getter);
         verify(bookingRepository).findAllByBookerIdOrderByStartDesc(1L, pageable);
     }
@@ -438,7 +438,7 @@ public class BookingServiceImplTest {
                         LocalDateTime.now().withNano(0),
                         LocalDateTime.now().withNano(0),
                         pageable))
-                .thenReturn(Page.empty());
+                .thenReturn(List.of());
         bookingService.getAllBookingsById(getter);
         verify(bookingRepository)
                 .findAllByBookerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(1L,
@@ -466,7 +466,7 @@ public class BookingServiceImplTest {
                 .findAllByBookerIdAndEndIsBeforeOrderByStartDesc(1L,
                         LocalDateTime.now().withNano(0),
                         pageable))
-                .thenReturn(Page.empty());
+                .thenReturn(List.of());
         bookingService.getAllBookingsById(getter);
         verify(bookingRepository)
                 .findAllByBookerIdAndEndIsBeforeOrderByStartDesc(1L,
@@ -494,7 +494,7 @@ public class BookingServiceImplTest {
                         BookingStatus.APPROVED,
                         BookingStatus.WAITING,
                         pageable))
-                .thenReturn(Page.empty());
+                .thenReturn(List.of());
         bookingService.getAllBookingsById(getter);
         verify(bookingRepository)
                 .findAllByBookerIdAndStartIsAfterAndStatusIsOrStatusIsOrderByStartDesc(1L,
@@ -523,7 +523,7 @@ public class BookingServiceImplTest {
                 .findAllByBookerIdAndStatusIsOrderByStartDesc(1L,
                         BookingStatus.WAITING,
                         pageable))
-                .thenReturn(Page.empty());
+                .thenReturn(List.of());
         bookingService.getAllBookingsById(getter);
         verify(bookingRepository)
                 .findAllByBookerIdAndStatusIsOrderByStartDesc(1L,
@@ -549,7 +549,7 @@ public class BookingServiceImplTest {
                 .findAllByBookerIdAndStatusIsOrderByStartDesc(1L,
                         BookingStatus.REJECTED,
                         pageable))
-                .thenReturn(Page.empty());
+                .thenReturn(List.of());
         bookingService.getAllBookingsById(getter);
         verify(bookingRepository)
                 .findAllByBookerIdAndStatusIsOrderByStartDesc(1L,

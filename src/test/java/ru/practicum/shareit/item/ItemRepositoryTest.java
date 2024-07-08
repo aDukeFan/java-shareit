@@ -43,7 +43,7 @@ public class ItemRepositoryTest {
         itemRepository.save(item);
         assertTrue(itemRepository.findByOwnerId(2L, PageRequest.of(0, 100)).isEmpty());
         assertEquals(1,
-                itemRepository.findByOwnerId(1L, PageRequest.of(0, 100)).toList().size());
+                itemRepository.findByOwnerId(1L, PageRequest.of(0, 100)).size());
     }
 
     @Test
@@ -61,9 +61,9 @@ public class ItemRepositoryTest {
         itemRepository.save(item);
         assertEquals(1, itemRepository
                 .findAllByNameIgnoreCaseContainingOrDescriptionIgnoreCaseContainingAndAvailableTrue(
-                "war",
-                "fire",
-                PageRequest.of(0, 100)).toList().size());
+                        "war",
+                        "fire",
+                        PageRequest.of(0, 100)).size());
     }
 
     @Test

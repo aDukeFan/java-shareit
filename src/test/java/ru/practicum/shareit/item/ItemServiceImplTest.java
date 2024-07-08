@@ -5,8 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import ru.practicum.shareit.booking.BookingMapper;
@@ -186,7 +184,7 @@ public class ItemServiceImplTest {
         Pageable pageable = PageRequest.of(1, 1);
         when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item));
         when(itemRepository.findByOwnerId(1L, pageable))
-                .thenReturn(new PageImpl<>(List.of(item), pageable, 1));
+                .thenReturn(List.of(item));
         List<ItemDtoOutcomeLong> expectList = List.of(itemMapper.toGetById(item));
         List<ItemDtoOutcomeLong> outcomeList = itemService.getAllItemsByOwner(1L, 1, 1);
         assertEquals(outcomeList, expectList);
@@ -202,7 +200,7 @@ public class ItemServiceImplTest {
         when(itemRepository
                 .findAllByNameIgnoreCaseContainingOrDescriptionIgnoreCaseContainingAndAvailableTrue(
                         anyString(),
-                        anyString(), any(Pageable.class))).thenReturn(Page.empty());
+                        anyString(), any(Pageable.class))).thenReturn(List.of());
         assertEquals(0, itemService.findByQuery("some text", 0, 10).size());
         verify(itemRepository)
                 .findAllByNameIgnoreCaseContainingOrDescriptionIgnoreCaseContainingAndAvailableTrue(

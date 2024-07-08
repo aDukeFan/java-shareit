@@ -81,7 +81,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public List<ItemDtoOutcomeLong> getAllItemsByOwner(long userId, Integer from, Integer size) {
         Pageable pageable = PageRequest.of(from / size, size);
-        List<Item> ownerItems = itemRepository.findByOwnerId(userId, pageable).toList();
+        List<Item> ownerItems = itemRepository.findByOwnerId(userId, pageable);
         List<ItemDtoOutcomeLong> result = new ArrayList<>();
         ownerItems.forEach(item -> result.add(getItemById(item.getId(), item.getOwner().getId())));
         result.sort(Comparator.comparing(ItemDtoOutcomeLong::getId));

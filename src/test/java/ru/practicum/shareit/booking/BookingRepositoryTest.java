@@ -131,7 +131,7 @@ public class BookingRepositoryTest {
         Booking savedBooking2 = bookingRepository.save(secondBooking);
         List<Booking> bookings = List.of(savedBooking2, savedBooking);
         assertEquals(bookings, bookingRepository
-                .findAllByItemOwnerIdOrderByStartDesc(owner.getId(), PageRequest.of(0, 100)).toList());
+                .findAllByItemOwnerIdOrderByStartDesc(owner.getId(), PageRequest.of(0, 100)));
     }
 
     @Test
@@ -173,7 +173,7 @@ public class BookingRepositoryTest {
         Booking savedBooking2 = bookingRepository.save(secondBooking);
         List<Booking> bookings = List.of(savedBooking2, savedBooking);
         assertEquals(bookings, bookingRepository
-                .findAllByBookerIdOrderByStartDesc(booker.getId(), PageRequest.of(0, 100)).toList());
+                .findAllByBookerIdOrderByStartDesc(booker.getId(), PageRequest.of(0, 100)));
     }
 
     @Test
@@ -218,7 +218,7 @@ public class BookingRepositoryTest {
                 .findAllByItemOwnerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(owner.getId(),
                         LocalDateTime.now(),
                         LocalDateTime.now(),
-                        PageRequest.of(0, 100)).toList());
+                        PageRequest.of(0, 100)));
     }
 
     @Test
@@ -263,7 +263,7 @@ public class BookingRepositoryTest {
                 .findAllByBookerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(booker.getId(),
                         LocalDateTime.now(),
                         LocalDateTime.now(),
-                        PageRequest.of(0, 100)).toList());
+                        PageRequest.of(0, 100)));
     }
 
     @Test
@@ -307,7 +307,7 @@ public class BookingRepositoryTest {
         assertEquals(bookings, bookingRepository
                 .findAllByItemOwnerIdAndEndIsBeforeOrderByStartDesc(owner.getId(),
                         LocalDateTime.now(),
-                        PageRequest.of(0, 100)).toList());
+                        PageRequest.of(0, 100)));
     }
 
     @Test
@@ -351,7 +351,7 @@ public class BookingRepositoryTest {
         assertEquals(bookings, bookingRepository
                 .findAllByBookerIdAndEndIsBeforeOrderByStartDesc(booker.getId(),
                         LocalDateTime.now(),
-                        PageRequest.of(0, 100)).toList());
+                        PageRequest.of(0, 100)));
     }
 
     @Test
@@ -395,7 +395,7 @@ public class BookingRepositoryTest {
         assertEquals(bookings, bookingRepository
                 .findAllByItemOwnerIdAndStartIsAfterAndStatusIsOrStatusIsOrderByStartDesc(owner.getId(),
                         LocalDateTime.now(), BookingStatus.APPROVED, BookingStatus.WAITING,
-                        PageRequest.of(0, 100)).toList());
+                        PageRequest.of(0, 100)));
     }
 
     @Test
@@ -439,7 +439,7 @@ public class BookingRepositoryTest {
         assertEquals(bookings, bookingRepository
                 .findAllByBookerIdAndStartIsAfterAndStatusIsOrStatusIsOrderByStartDesc(booker.getId(),
                         LocalDateTime.now(), BookingStatus.APPROVED, BookingStatus.WAITING,
-                        PageRequest.of(0, 100)).toList());
+                        PageRequest.of(0, 100)));
     }
 
     @Test
@@ -483,7 +483,7 @@ public class BookingRepositoryTest {
         assertEquals(bookings, bookingRepository
                 .findAllByItemOwnerIdAndStatusIsOrderByStartDesc(owner.getId(),
                         BookingStatus.WAITING,
-                        PageRequest.of(0, 100)).toList());
+                        PageRequest.of(0, 100)));
         assertTrue(bookingRepository
                 .findAllByItemOwnerIdAndStatusIsOrderByStartDesc(owner.getId(),
                         BookingStatus.REJECTED,
@@ -531,7 +531,7 @@ public class BookingRepositoryTest {
         assertEquals(bookings, bookingRepository
                 .findAllByBookerIdAndStatusIsOrderByStartDesc(booker.getId(),
                         BookingStatus.WAITING,
-                        PageRequest.of(0, 100)).toList());
+                        PageRequest.of(0, 100)));
         assertTrue(bookingRepository
                 .findAllByBookerIdAndStatusIsOrderByStartDesc(booker.getId(),
                         BookingStatus.REJECTED,

@@ -2,6 +2,7 @@ package shareit.booking;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 import shareit.booking.booking_getter.model.BookingGetter;
+import shareit.booking.booking_getter.model.BookingGetterType;
 import shareit.booking.dto.BookingDtoIncome;
 import shareit.booking.dto.BookingDtoOutcomeLong;
 import shareit.util.Constants;
@@ -57,6 +59,30 @@ public class BookingServiceClient {
     }
 
     public List<BookingDtoOutcomeLong> getAllBookingsById(BookingGetter getter) {
-        return null;
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("state", getter.getState());
+        parameters.put("from", getter.getFrom());
+        parameters.put("size", getter.getSize());
+        String urlWithParams = "?state={state}&from={from}&size={size}";
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(Constants.X_SHARER_USER_ID, String.valueOf(getter.getUserId()));
+        HttpEntity<Void> entity = new HttpEntity<>(headers);
+        if (getter.getType().equals(BookingGetterType.OWNER)) {
+            String urlOwner = "/owner" + urlWithParams;
+            return template.exchange(urlOwner,
+                    HttpMethod.GET,
+                    entity,
+                    new ParameterizedTypeReference<List<BookingDtoOutcomeLong>>() {
+                    },
+                    parameters).getBody();
+        } else {
+            return template.exchange(urlWithParams,
+                    HttpMethod.GET,
+                    entity,
+                    new ParameterizedTypeReference<List<BookingDtoOutcomeLong>>() {
+                    },
+                    parameters).getBody();
+        }
+
     }
 }

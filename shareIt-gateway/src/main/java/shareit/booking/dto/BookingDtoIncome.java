@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.experimental.FieldDefaults;
-import org.junit.After;
+import shareit.booking.dto.validavor.ValidBookingDate;
 
 import javax.validation.constraints.Future;
 import javax.validation.constraints.FutureOrPresent;
@@ -19,6 +19,7 @@ import java.time.LocalDateTime;
 @Setter
 @Getter
 @EqualsAndHashCode
+@ValidBookingDate(message = "Bad booking time!")
 public class BookingDtoIncome {
 
     @NotNull

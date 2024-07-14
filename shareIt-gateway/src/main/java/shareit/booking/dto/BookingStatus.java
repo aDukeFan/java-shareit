@@ -1,4 +1,4 @@
-package shareit.booking.model;
+package shareit.booking.dto;
 
 public enum BookingStatus {
     WAITING,

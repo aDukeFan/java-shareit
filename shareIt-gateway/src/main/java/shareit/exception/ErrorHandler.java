@@ -6,6 +6,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.client.HttpClientErrorException;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+
 @RestControllerAdvice
 public class ErrorHandler {
 
@@ -17,9 +20,15 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleNotFound(final HttpClientErrorException.BadRequest exception) {
+    public ErrorResponse handleBadRequest(final HttpClientErrorException.BadRequest exception) {
         return new ErrorResponse("Bad request");
     }
 
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleNotValid(final ConstraintViolationException exception) {
+        return new ErrorResponse(exception.getConstraintViolations().stream()
+                .map(ConstraintViolation::getMessage).findFirst().orElse("Wrong request"));
+    }
 }
 

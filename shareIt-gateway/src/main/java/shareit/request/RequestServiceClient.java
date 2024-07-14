@@ -64,13 +64,23 @@ public class RequestServiceClient {
         HttpHeaders headers = new HttpHeaders();
         headers.set(Constants.X_SHARER_USER_ID, String.valueOf(userId));
         HttpEntity<Void> entity = new HttpEntity<>(headers);
-        Map<String, Object> parameters = Map.of(
-                "from", from,
-                "size", size);
-        return template.exchange("/all", 
-                        HttpMethod.GET, entity, 
-                        new ParameterizedTypeReference<List<RequestDtoWithItemList>>() {}, 
-                        parameters)
-                .getBody();
+        String url = "/all";
+        if (from == null || size == null) {
+            return template.exchange(url,
+                            HttpMethod.GET, entity,
+                            new ParameterizedTypeReference<List<RequestDtoWithItemList>>() {})
+                    .getBody();
+        } else {
+            String urlWithParams = url + "?from={from}&size={size}";
+            Map<String, Object> parameters = Map.of(
+                    "from", from,
+                    "size", size);
+            return template.exchange(urlWithParams,
+                            HttpMethod.GET, entity,
+                            new ParameterizedTypeReference<List<RequestDtoWithItemList>>() {
+                            },
+                            parameters)
+                    .getBody();
+        }
     }
 }

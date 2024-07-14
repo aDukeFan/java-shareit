@@ -8,14 +8,12 @@ import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.booking_getter.model.BookingGetter;
 import ru.practicum.shareit.booking.booking_getter.model.BookingGetterState;
 import ru.practicum.shareit.booking.booking_getter.model.BookingGetterType;
-import ru.practicum.shareit.booking.creator_checker.CheckerCreatorChain;
-import ru.practicum.shareit.booking.creator_checker.checker.CreatorChecker;
-import ru.practicum.shareit.booking.creator_checker.model.Creator;
 import ru.practicum.shareit.booking.dto.BookingDtoIncome;
 import ru.practicum.shareit.booking.dto.BookingDtoOutcomeLong;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.exception.BadRequestException;
+import ru.practicum.shareit.exception.BookingTimeException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.model.Item;
@@ -24,7 +22,6 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.util.Constants;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -46,16 +43,13 @@ public class BookingServiceImpl implements BookingService {
         Long itemId = bookingDtoIncome.getItemId();
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new NotFoundException(Constants.NO_ITEM_WITH_SUCH_ID + itemId));
-        LocalDateTime start = bookingDtoIncome.getStart();
-        LocalDateTime end = bookingDtoIncome.getEnd();
-        Creator request = new Creator()
-                .setStart(start)
-                .setEnd(end)
-                .setBookerId(bookerId)
-                .setOwnerId(item.getOwner().getId())
-                .setAvailable(item.getAvailable());
-        CreatorChecker checker = new CheckerCreatorChain().createCreatorChecker();
-        checker.check(request);
+        if (!item.getAvailable()) {
+            throw new BookingTimeException("item is unavailable");
+        }
+        if (item.getOwner().getId() == bookerId) {
+            throw new NotFoundException("Owner can't booking item");
+        }
+
         Booking booking = bookingMapper.toSave(bookingDtoIncome)
                 .setItem(item)
                 .setBooker(booker);
@@ -100,9 +94,6 @@ public class BookingServiceImpl implements BookingService {
             throw new NotFoundException(Constants.NO_USER_WITH_SUCH_ID + userId);
         }
         String state = getter.getState();
-        if (!Arrays.toString(BookingGetterState.values()).contains(state)) {
-            throw new BadRequestException("Unknown state: UNSUPPORTED_STATUS");
-        }
         Integer from = getter.getFrom();
         Integer size = getter.getSize();
         Pageable pageable = PageRequest.of(from / size, size);

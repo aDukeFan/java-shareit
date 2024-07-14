@@ -15,6 +15,7 @@ import shareit.booking.booking_getter.model.BookingGetter;
 import shareit.booking.booking_getter.model.BookingGetterType;
 import shareit.booking.dto.BookingDtoIncome;
 import shareit.booking.dto.BookingDtoOutcomeLong;
+import shareit.booking.booking_getter.validator.ValidState;
 import shareit.util.Constants;
 
 import javax.validation.Valid;
@@ -52,7 +53,7 @@ public class BookingController {
     public List<BookingDtoOutcomeLong> getBookerBookings(@RequestHeader(Constants.X_SHARER_USER_ID) long bookerId,
                                                          @RequestParam(required = false, defaultValue = "0") @Min(0) Integer from,
                                                          @RequestParam(required = false, defaultValue = "100") @Min(1) Integer size,
-                                                         @RequestParam(required = false, defaultValue = "ALL") String state) {
+                                                         @RequestParam(required = false, defaultValue = "ALL") @ValidState String state) {
         BookingGetter getter = new BookingGetter()
                 .setUserId(bookerId)
                 .setState(state)
@@ -66,7 +67,7 @@ public class BookingController {
     public List<BookingDtoOutcomeLong> getOwnerBookings(@RequestHeader(Constants.X_SHARER_USER_ID) long ownerId,
                                                         @RequestParam(required = false, defaultValue = "0") @Min(0) Integer from,
                                                         @RequestParam(required = false, defaultValue = "100") @Min(1) Integer size,
-                                                        @RequestParam(required = false, defaultValue = "ALL") String state) {
+                                                        @RequestParam(required = false, defaultValue = "ALL") @ValidState String state) {
         BookingGetter getter = new BookingGetter()
                 .setUserId(ownerId)
                 .setState(state)

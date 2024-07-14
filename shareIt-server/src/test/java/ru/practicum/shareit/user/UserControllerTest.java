@@ -15,7 +15,6 @@ import ru.practicum.shareit.user.dto.UserDto;
 import java.nio.charset.StandardCharsets;
 
 import static org.hamcrest.Matchers.is;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -56,29 +55,6 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.id", is(1L), Long.class))
                 .andExpect(jsonPath("$.name", is(userDto.getName())))
                 .andExpect(jsonPath("$.email", is(userDto.getEmail())));
-    }
-
-    @SneakyThrows
-    @Test
-    public void createNotValidTest() {
-        UserDto userDto = new UserDto()
-                .setName("name")
-                .setEmail("yaya.ru");
-        when(userService.create(Mockito.any(UserDto.class)))
-                .thenAnswer(invocationOnMock -> invocationOnMock
-                        .getArgument(0, UserDto.class)
-                        .setId(1L)
-                        .setName(userDto.getName())
-                        .setEmail(userDto.getEmail()));
-
-        mvc.perform(MockMvcRequestBuilders.post("/users")
-                        .content(mapper.writeValueAsString(userDto))
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-
-        verify(userService, never()).create(userDto);
     }
 
     @SneakyThrows

@@ -2,9 +2,6 @@ package ru.practicum.shareit.user;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.user.dto.UserDto;
@@ -47,8 +44,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto get(long userId) {
         Optional<User> userOptional = repository.findById(userId);
-        if(userOptional.isEmpty()) {
-            throw  new NotFoundException(Constants.NO_USER_WITH_SUCH_ID + userId);
+        if (userOptional.isEmpty()) {
+            throw new NotFoundException(Constants.NO_USER_WITH_SUCH_ID + userId);
         }
         return userMapper.toDto(userOptional.get());
     }

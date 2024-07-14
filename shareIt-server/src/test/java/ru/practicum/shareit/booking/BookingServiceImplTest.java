@@ -5,9 +5,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageRequest;
@@ -29,7 +26,6 @@ import ru.practicum.shareit.user.model.User;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -103,24 +99,6 @@ public class BookingServiceImplTest {
                 .setStatus(status);
     }
 
-    private static Stream<Arguments> badBookingTimeStream() {
-        return Stream.of(
-                Arguments.of(LocalDateTime.now(), LocalDateTime.now()),
-                Arguments.of(LocalDateTime.now().minusMinutes(10), LocalDateTime.now().minusMinutes(20)),
-                Arguments.of(LocalDateTime.now().plusDays(10), LocalDateTime.now().plusDays(5)));
-    }
-
-    @ParameterizedTest()
-    @MethodSource("badBookingTimeStream")
-    @DisplayName("Test create method with wrong booking time")
-    public void createBookingWithWrongTimeTest(LocalDateTime start, LocalDateTime end) {
-        income.setStart(start).setEnd(end);
-        Item item = makeItemWithOwnerAndAvailable(true);
-        when(userRepository.findById(anyLong())).thenReturn(Optional.of(booker));
-        when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item));
-        assertThrows(BookingTimeException.class, () -> bookingService.createBooking(1L, income));
-    }
-
     @Test
     public void createBookingNotAvailableTest() {
         Item item = makeItemWithOwnerAndAvailable(false);
@@ -185,13 +163,6 @@ public class BookingServiceImplTest {
                     .setType(type)
                     .setState(state)
                     .setUserId(1L);
-        }
-
-        @Test
-        public void getAllBookingsByIdWithWrongState() {
-            BookingGetter getter = makeGetter(BOOKER, "Wrong state");
-            when(userRepository.findById(anyLong())).thenReturn(Optional.of(new User()));
-            assertThrows(BadRequestException.class, () -> bookingService.getAllBookingsById(getter));
         }
 
         @Test

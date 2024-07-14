@@ -7,9 +7,6 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.experimental.FieldDefaults;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotNull;
-
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)

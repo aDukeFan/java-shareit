@@ -6,6 +6,8 @@
 * with PostgreSQL DateBase
 
 ### last changes
-* add bookings 
+* add requests
+* add comments
+* add bookings
 * add users
 * add items

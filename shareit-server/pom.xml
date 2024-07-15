@@ -9,7 +9,7 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>shareIt-server</artifactId>
+    <artifactId>shareit-server</artifactId>
 
     <properties>
         <java.version>11</java.version>

@@ -2,8 +2,8 @@ version: '3.8'
 services:
   shareit-server:
     build: shareit-server
-    image: shareit-server
-    container_name: shareit-server
+    image: shareit-server-image
+    container_name: shareit-server-container
     ports:
       - "9090:9090"
     depends_on:
@@ -16,7 +16,7 @@ services:
 
   shareit-db:
     image: postgres:14-alpine
-    container_name: date-base
+    container_name: shareit-db-container
     ports:
       - "6541:5432"
     environment:
@@ -26,8 +26,8 @@ services:
 
   shareit-gateway:
     build: shareit-gateway
-    image: shareit-gateway
-    container_name: shareit-gateway
+    image: shareit-gateway-image
+    container_name: shareit-gateway-container
     ports:
       - "8080:8080"
     depends_on:

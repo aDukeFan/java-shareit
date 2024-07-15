@@ -9,7 +9,7 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>shareIt-gateway</artifactId>
+    <artifactId>gateway</artifactId>
     <packaging>jar</packaging>
 
     <name>module2</name>
